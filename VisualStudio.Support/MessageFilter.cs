@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace VisualStudio.Probe
+namespace Support.VisualStudio
 {
     // http://msdn.microsoft.com/en-us/library/ms228772.aspx
     public class MessageFilter : IOleMessageFilter

@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using EnvDTE80;
+using System.Reflection;
+using System.Diagnostics;
+using Support.VisualStudio;
 
 namespace VisualStudio.Probe
 {
@@ -15,23 +18,14 @@ namespace VisualStudio.Probe
 
         static void Main(string[] args)
         {
-            Type type = Type.GetTypeFromProgID(GetProgId(DTEVersion.VS10), true);
-            object obj = Activator.CreateInstance(type, true);
-            _dte = obj as DTE2;
+            DTEWrapper wrapper = DTEInstanceManager.GetExternalDTE(DTEVersion.VS10, "/rootsuffix Exp");
+            _dte = wrapper.DTE;
+            GC.KeepAlive(wrapper);
 
-            // Register the IOleMessageFilter to handle any threading errors.
-            MessageFilter.Register();
-
-#if VISIBLE
+#if !VISIBLE
             MakeVisible();
 #endif
-
             DoWork();
-
-            _dte.Quit();
-
-            // and turn off the IOleMessageFilter.
-            MessageFilter.Revoke();
         }
 
         private static void DoWork()
@@ -39,41 +33,15 @@ namespace VisualStudio.Probe
             Solution2 solution = (Solution2)_dte.Solution;
             // create a new solution
             solution.Create(@"C:\Temp\", "NewSolution");
-
-            solution.AddFromTemplate(@"C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcprojects\Win32Wiz.vsz", @"C:\Temp", "Test");
+            solution.AddFromTemplate(@"C:\Users\ceztko\Documents\GitHub\SideBuilder\Resources\TemplatesVS10\Win32Dll\MyTemplate.vstemplate", @"C:\Temp", "Test");
             solution.SaveAs(@"C:\Temp\NewSolution.sln");
         }
 
-        private static void MakeVisible(DTE2 dte)
+        private static void MakeVisible()
         {
             // Display the Visual Studio IDE.
-            dte.MainWindow.Activate();
-            dte.MainWindow.Visible = true;
-        }
-
-        public static string GetProgId(DTEVersion version)
-        {
-            switch (version)
-            {
-                case DTEVersion.Latest:
-                    return "VisualStudio.DTE";
-                case DTEVersion.VS10:
-                    return "VisualStudio.DTE.10.0";
-                case DTEVersion.VS11:
-                    return "VisualStudio.DTE.10.0";
-                case DTEVersion.VS12:
-                    return "VisualStudio.DTE.12.0";
-                default:
-                    throw new Exception();
-            }
-        }
-
-        public enum DTEVersion
-        {
-            Latest,
-            VS10,
-            VS11,
-            VS12
+            _dte.MainWindow.Activate();
+            _dte.MainWindow.Visible = true;
         }
     }
 }

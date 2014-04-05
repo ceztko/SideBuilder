@@ -153,6 +153,15 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </COMReference>
+    <COMReference Include="mscoree">
+      <Guid>{5477469E-83B1-11D2-8B49-00A0C9B7C9C4}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>4</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
     <COMReference Include="stdole">
       <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
       <VersionMajor>2</VersionMajor>
@@ -164,8 +173,13 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppDomainUtils.cs" />
+    <Compile Include="CLSIDUtils.cs" />
+    <Compile Include="DTEInstanceManager.cs" />
+    <Compile Include="DTEWrapper.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Extensions.VS10.cs" />
+    <Compile Include="MessageFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
