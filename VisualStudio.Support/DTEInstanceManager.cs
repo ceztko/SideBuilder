@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2014 Francesco Pretto
+// This file is subject to the MIT license
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,8 +15,8 @@ using W32Thread = System.Threading.Thread;
 
 namespace Support.VisualStudio
 {
-    // http://social.msdn.microsoft.com/Forums/vstudio/en-US/3120db69-a89c-4545-874f-2d61c9317c8a/is-it-possible-to-get-the-dte2-com-object-when-starting-devenvexe-with-parameters?forum=vsx, Leonard Jiang
-    // http://www.codeproject.com/Articles/7984/Automating-a-specific-instance-of-Visual-Studio-NE, Mohamed Hendawi
+    // http://social.msdn.microsoft.com/Forums/vstudio/en-US/3120db69-a89c-4545-874f-2d61c9317c8a/is-it-possible-to-get-the-dte2-com-object-when-starting-devenvexe-with-parameters?forum=vsx, Leonard Jiang, PD
+    // http://www.codeproject.com/Articles/7984/Automating-a-specific-instance-of-Visual-Studio-NE, Mohamed Hendawi, PD
     public class DTEInstanceManager
     {
         [DllImport("ole32.dll", SetLastError = true)]

@@ -6,7 +6,7 @@ using Microsoft.Win32;
 
 namespace Support.VisualStudio
 {
-    // http://stackoverflow.com/questions/10214183/get-dll-directory-from-progid richard druce
+    // http://stackoverflow.com/questions/10214183/get-dll-directory-from-progid richard druce, CC BY-SA 3.0
     public static class CLSIDUtils
     {
         public static string GetLocalServerFromProgID(string progID)
