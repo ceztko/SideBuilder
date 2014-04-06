@@ -9,7 +9,7 @@
 $safeprjnameupcase$_API int n$safeprojectname$=0;
 
 // This is an example of an exported function.
-$safeprjnameupcase$ int fn$safeprojectname$(void)
+$safeprjnameupcase$_API int fn$safeprojectname$(void)
 {
 	return 42;
 }

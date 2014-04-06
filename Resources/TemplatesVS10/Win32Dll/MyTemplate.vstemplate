@@ -14,7 +14,7 @@
     <Icon>__TemplateIcon.ico</Icon>
   </TemplateData>
   <TemplateContent>
-    <Project TargetFileName="Win32Dll.csproj" File="Win32Dll.csproj" ReplaceParameters="true">
+    <Project TargetFileName="Win32Dll.vcxproj" File="Win32Dll.vcxproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$.vcxproj.user">Win32Dll.vcxproj._user</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$.vcxproj.filters">Win32Dll.vcxproj.filters</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$.h">Win32Dll.h</ProjectItem>
@@ -26,7 +26,7 @@
     </Project>
   </TemplateContent>
   <WizardExtension>
-    <Assembly>VisualStudio.Probe.VS10, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Assembly>
+    <Assembly>VisualStudio.Probe.VS10, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc9ca6d789267bc2</Assembly>
     <FullClassName>VisualStudio.Probe.ProbeTemplateWizard</FullClassName>
   </WizardExtension>
 </VSTemplate>
