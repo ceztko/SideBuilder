@@ -30,6 +30,8 @@ namespace VisualStudio.Probe
 
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
+            string safeprojectname = replacementsDictionary["$safeprojectname$"];
+            replacementsDictionary["$safeprjnameupcase$"] = safeprojectname.ToUpper();
         }
 
         public bool ShouldAddProjectItem(string filePath)

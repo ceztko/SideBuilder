@@ -1,7 +1,4 @@
-﻿// Copyright (c) 2014 Francesco Pretto
-// This file is subject to the MIT license
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +19,7 @@ namespace VisualStudio.Probe
             _dte = wrapper.DTE;
             GC.KeepAlive(wrapper);
 
-#if !VISIBLE
+#if VISIBLE
             MakeVisible();
 #endif
             DoWork();
@@ -33,7 +30,7 @@ namespace VisualStudio.Probe
             Solution2 solution = (Solution2)_dte.Solution;
             // create a new solution
             solution.Create(@"C:\Temp\", "NewSolution");
-            solution.AddFromTemplate(@"C:\Users\ceztko\Documents\GitHub\SideBuilder\Resources\TemplatesVS10\Win32Dll\MyTemplate.vstemplate", @"C:\Temp", "Test");
+            solution.AddFromTemplate(@"C:\Users\ceztko\Documents\GitHub\SideBuilder\Resources\TemplatesVS10\Win32App\MyTemplate.vstemplate", @"C:\Temp", "Test");
             solution.SaveAs(@"C:\Temp\NewSolution.sln");
         }
 
