@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.Modeling.Shell;
 using System.Reflection;
 using NUnit.Core;
 using NUnit.Util;
+using System.IO;
 
 namespace VisualStudio.Probe
 {
@@ -32,6 +33,7 @@ namespace VisualStudio.Probe
         private static MainSite _Instance;
         private DTE2 _DTE2;
         private DTEEvents _DTEEvents;
+        private string _TempDir;
 
         public MainSite()
         {
@@ -49,15 +51,28 @@ namespace VisualStudio.Probe
 
         void _DTEEvents_OnStartupComplete()
         {
+            string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            _TempDir = Path.Combine(userDir, "Temp", "VsProbe");
+
+            try
+            {
+                Directory.Delete(_TempDir, true);
+            }
+            catch (DirectoryNotFoundException) { }
+
+            Directory.CreateDirectory(_TempDir);
+
             CoreExtensions.Host.InitializeService();
-            SimpleTestRunner remoteTestRunner = new SimpleTestRunner();
-            TestPackage package = new TestPackage(@"Probe");
-            string loc = Assembly.GetExecutingAssembly().Location;
-            package.Assemblies.Add(loc);
-            remoteTestRunner.Load(package);
-            TestResult testResult = remoteTestRunner.Run(new NullListener(), TestFilter.Empty, false, LoggingThreshold.Off);
-            XmlResultWriter writer = new XmlResultWriter(@"C:\Temp\TestResult.xml");
-            writer.SaveTestResult(testResult);
+            using (SimpleTestRunner simpleTestRunner = new SimpleTestRunner())
+            {
+                TestPackage package = new TestPackage(@"Probe");
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                package.Assemblies.Add(assembly.Location);
+                simpleTestRunner.Load(package);
+                TestResult testResult = simpleTestRunner.Run(new NullListener(), TestFilter.Empty, false, LoggingThreshold.Off);
+                XmlResultWriter writer = new XmlResultWriter(Path.Combine(_TempDir, "TestResult.xml"));
+                writer.SaveTestResult(testResult);
+            }
             _DTE2.Quit();
         }
 
@@ -74,6 +89,11 @@ namespace VisualStudio.Probe
         public DTE2 DTE2
         {
             get { return _DTE2; }
+        }
+
+        public string TempDir
+        {
+            get { return _TempDir; }
         }
 
         public static MainSite Instance

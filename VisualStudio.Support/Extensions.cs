@@ -136,6 +136,14 @@ namespace VisualStudio.Support
 
             return null;
         }
+
+        public static string TrimStart(this string str, string start)
+        {
+            if (!str.StartsWith(start))
+                return null;
+
+            return str.Substring(start.Length);
+        }
     }
 
     public class HiearchyItemPair
