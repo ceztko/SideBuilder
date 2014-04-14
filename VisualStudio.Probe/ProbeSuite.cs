@@ -65,7 +65,7 @@ namespace VisualStudio.Probe
             solution.Create(_tempDir, "NewSolution");
 
             // Create the project
-            List<DTEProject> projects = ProbeTemplate.AddFromTemplate(_DTE2,
+            List<DTEProject> projects = TemplateHelper.AddFromTemplate(_DTE2,
                 Path.Combine(_sourceDir, @"Resources\TemplatesVS10\Win32Dll\MyTemplate.vstemplate"),
                 Path.Combine(_tempDir, "Test"), "Test");
             solution.SaveAs(Path.Combine(_tempDir, "NewSolution.sln"));

@@ -10,22 +10,22 @@ using EnvDTE;
 using EnvDTE80;
 using System.Threading;
 
-namespace VisualStudio.Probe
+namespace VisualStudio.Support
 {
-    class ProbeTemplate : IWizard
+    public class TemplateHelper : IWizard
     {
         private static object _Lock;
         private static TemplateHandle _Current;
 
         private List<Project> _Projects;
 
-        static ProbeTemplate()
+        static TemplateHelper()
         {
             _Lock = new object();
             _Current = null;
         }
 
-        public ProbeTemplate()
+        public TemplateHelper()
         {
             _Projects = new List<Project>();
 
@@ -110,7 +110,7 @@ namespace VisualStudio.Probe
 
     internal class TemplateHandle
     {
-        public ProbeTemplate Template
+        public TemplateHelper Template
         {
             get;
             set;
