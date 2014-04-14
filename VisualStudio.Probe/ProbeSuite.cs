@@ -37,6 +37,7 @@ namespace VisualStudio.Probe
         private VCProject _vcproject;
         private VCConfiguration _debugConfig;
         private VCConfiguration _releaseConfig;
+
         private EventHandler<ProjectPropertyChangedEventArgs> _debugPropHandler;
         private EventHandler<ProjectPropertyChangedEventArgs> _releasePropHandler;
         private EventHandler<ProjectXmlChangedEventArgs> _collectionXmlChangedHandler;
@@ -90,7 +91,7 @@ namespace VisualStudio.Probe
         }
 
         [Test]
-        public void DoWork()
+        public void ConfigurationType()
         {
             _collectionXmlChangedHandler = (sender, args) =>
             {
@@ -104,6 +105,16 @@ namespace VisualStudio.Probe
             };
 
             _debugConfig.ConfigurationType = ConfigurationTypes.typeStaticLibrary;
+        }
+
+        [Test]
+        public void Filters()
+        {
+            IVCCollection filters = _vcproject.Filters;
+            VCFilter filter = filters.Item("Source Files");
+            Assert.AreEqual(filter.Filter, "cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx");
+            filter = filters.Item("Header Files");
+            Assert.AreEqual(filter.Filter, "h;hpp;hxx;hm;inl;inc;xsd");
         }
 
         [TearDown]
