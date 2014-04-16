@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.VCProjectEngine;
 using Microsoft.Build.Evaluation;
+using Microsoft.VisualStudio.Text;
 using System.Reflection;
 using Microsoft.VisualStudio.Project.Framework.INTERNAL.VS2010ONLY;
 using Microsoft.VisualStudio.Project.Contracts.INTERNAL.VS2010ONLY;
@@ -16,15 +17,17 @@ namespace VisualStudio.Support
     extern alias VC;
     using VCProjectShim = VC::Microsoft.VisualStudio.Project.VisualC.VCProjectEngine.VCProjectShim;
     using VCConfigurationShim = VC::Microsoft.VisualStudio.Project.VisualC.VCProjectEngine.VCConfigurationShim;
-    using Microsoft.VisualStudio.Text;
+
 
     public static partial class Extensions
     {
-        static PropertyInfo _PropGetter;
+        static PropertyInfo _PropGetterConf;
+        static PropertyInfo _PropGetterProj;
 
         static Extensions()
         {
-            _PropGetter = typeof(VCConfigurationShim).GetProperty("ConfiguredProject", BindingFlags.Instance | BindingFlags.NonPublic);
+            _PropGetterConf = typeof(VCConfigurationShim).GetProperty("ConfiguredProject", BindingFlags.Instance | BindingFlags.NonPublic);
+            _PropGetterProj = typeof(VCProjectShim).GetProperty("ConfiguredProject", BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
         public static ITextDocument GetTextDocument(this ITextBuffer textBuffer)
@@ -38,9 +41,14 @@ namespace VisualStudio.Support
                 return null;
         }
 
+        public static ConfiguredProject GetConfiguredProject(this VCProject project)
+        {
+            return _PropGetterConf.GetValue(project, null) as ConfiguredProject;
+        }
+
         public static ConfiguredProject GetConfiguredProject(this VCConfiguration configuration)
         {
-            return _PropGetter.GetValue(configuration, null) as ConfiguredProject;
+            return _PropGetterConf.GetValue(configuration, null) as ConfiguredProject;
         }
 
         public static MSBuildProjectService GetProjectService(this ConfiguredProject confproj)
@@ -50,7 +58,7 @@ namespace VisualStudio.Support
 
         public static IProjectPropertiesProvider GetProjectPropertiesProvider(this ConfiguredProject project)
         {
-            return GetFeature <IProjectPropertiesProvider>(project, "Name", "ProjectFile");
+            return GetFeature<IProjectPropertiesProvider>(project, "Name", "ProjectFile");
         }
 
         public static IProjectPropertiesProvider GetUserPropertiesProvider(this ConfiguredProject project)

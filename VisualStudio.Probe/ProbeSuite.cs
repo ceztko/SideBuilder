@@ -19,14 +19,17 @@ using Microsoft.VisualStudio.Project.Contracts.INTERNAL.VS2010ONLY;
 using NUnit.Core;
 using NUnit.Framework;
 using NStackFrame = System.Diagnostics.StackFrame;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio;
+using System.Runtime.InteropServices;
 
 namespace VisualStudio.Probe
 {
-    //extern alias VC;
-    //using VC::Microsoft.VisualStudio.Project.VisualC.VCProjectEngine;
+    extern alias VC;
+    using VCProjectShim=VC::Microsoft.VisualStudio.Project.VisualC.VCProjectEngine.VCProjectShim;
 
     [TestFixture]
-    public class ProbeSuite
+    public class ProbeSuite : IVsSolutionEvents3
     {
         private string _sourceDir;
         private string _tempDir;
@@ -37,6 +40,7 @@ namespace VisualStudio.Probe
         private VCProject _vcproject;
         private VCConfiguration _debugConfig;
         private VCConfiguration _releaseConfig;
+        private IVsHierarchy _hierarchy;
 
         private EventHandler<ProjectPropertyChangedEventArgs> _debugPropHandler;
         private EventHandler<ProjectPropertyChangedEventArgs> _releasePropHandler;
@@ -60,6 +64,12 @@ namespace VisualStudio.Probe
             _sourceDir = directoryInfo.Parent.FullName;
 
             Solution2 solution = (Solution2)_DTE2.Solution;
+
+            IVsSolution vsSolution = _mainSite.GetService<SVsSolution>() as IVsSolution;
+            int hr;
+            uint pdwCookie;
+            hr = vsSolution.AdviseSolutionEvents(this, out pdwCookie);
+            Marshal.ThrowExceptionForHR(hr);
 
             // Create a new solution
             solution.Create(_tempDir, "NewSolution");
@@ -89,6 +99,17 @@ namespace VisualStudio.Probe
             _projectCollection.ProjectCollectionChanged += new EventHandler<ProjectCollectionChangedEventArgs>(_projectCollection_ProjectCollectionChanged);
             _projectCollection.ProjectXmlChanged += new EventHandler<ProjectXmlChangedEventArgs>(_projectCollection_ProjectXmlChanged);
         }
+
+        [Test]
+        public void TestBuildPropertyStorage()
+        {
+            IVsBuildPropertyStorage storage = _hierarchy as IVsBuildPropertyStorage;
+            storage.SetPropertyValue("test1", null, (uint)_PersistStorageType.PST_PROJECT_FILE, "test");
+            storage.SetPropertyValue("test1", "Debug", (uint)_PersistStorageType.PST_PROJECT_FILE, "test");
+            storage.SetPropertyValue("test2", "Debug|Win32", (uint)_PersistStorageType.PST_PROJECT_FILE, "test");
+            _project.Save();
+        }
+
 
         [Test]
         public void ConfigurationType()
@@ -168,6 +189,82 @@ namespace VisualStudio.Probe
             EventHandler<ProjectPropertyChangedEventArgs> handler = _releasePropHandler;
             if (handler != null)
                 handler(sender, args);
+        }
+
+        public int OnAfterCloseSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterClosingChildren(IVsHierarchy pHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterMergeSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
+        {
+            _hierarchy = pHierarchy;
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterOpeningChildren(IVsHierarchy pHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeCloseSolution(object pUnkReserved)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeClosingChildren(IVsHierarchy pHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeOpeningChildren(IVsHierarchy pHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
+        {
+            return VSConstants.S_OK;
         }
     }
 }
