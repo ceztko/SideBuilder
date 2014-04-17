@@ -27,6 +27,7 @@ namespace VisualStudio.Probe
 {
     extern alias VC;
     using VCProjectShim=VC::Microsoft.VisualStudio.Project.VisualC.VCProjectEngine.VCProjectShim;
+    using Microsoft.Build.Construction;
 
     [TestFixture]
     public class ProbeSuite : IVsSolutionEvents3
@@ -101,15 +102,92 @@ namespace VisualStudio.Probe
         }
 
         [Test]
-        public void TestBuildPropertyStorage()
+        public void Test1()
         {
+            ConfiguredProject confproject = _debugConfig.GetConfiguredProject();
+            MSBuildProjectService service = confproject.GetProjectService();
+            using (var wrapper = service.GlobalCheckout(false))
+            {
+                BuildProject project = wrapper.Project;
+                using(var writer = new StreamWriter(Path.Combine(_tempDir, "debug.txt")))
+                {
+                    foreach (ResolvedImport import in project.Imports)
+                        writer.WriteLine(import.ImportedProject.FullPath);
+                }
+
+                using (var writer = new StreamWriter(Path.Combine(_tempDir, "debug-prop.txt")))
+                {
+                    foreach (var property in project.GlobalProperties)
+                        writer.WriteLine(property.Key + " " + property.Value);
+                }
+            }
+
+            confproject = _releaseConfig.GetConfiguredProject();
+            service = confproject.GetProjectService();
+            using (var wrapper = service.GlobalCheckout(false))
+            {
+                BuildProject project = wrapper.Project;
+                using (var writer = new StreamWriter(Path.Combine(_tempDir, "release.txt")))
+                {
+                    foreach (ResolvedImport import in project.Imports)
+                        writer.WriteLine(import.ImportedProject.FullPath);
+                }
+
+                using (var writer = new StreamWriter(Path.Combine(_tempDir, "release-prop.txt")))
+                {
+                    foreach (var property in project.GlobalProperties)
+                        writer.WriteLine(property.Key + " " + property.Value);
+                }
+            }
+
+            using (var writer = new StreamWriter(Path.Combine(_tempDir, "global-prop.txt")))
+            {
+                foreach (var property in ProjectCollection.GlobalProjectCollection.GlobalProperties)
+                    writer.WriteLine(property.Key + " " + property.Value);
+            }
+        }
+
+        [Test]
+        public void Test2()
+        {
+
             IVsBuildPropertyStorage storage = _hierarchy as IVsBuildPropertyStorage;
             storage.SetPropertyValue("test1", null, (uint)_PersistStorageType.PST_PROJECT_FILE, "test");
             storage.SetPropertyValue("test1", "Debug", (uint)_PersistStorageType.PST_PROJECT_FILE, "test");
             storage.SetPropertyValue("test2", "Debug|Win32", (uint)_PersistStorageType.PST_PROJECT_FILE, "test");
+            storage.SetPropertyValue("test3", null, (uint)_PersistStorageType.PST_USER_FILE, "test");
             _project.Save();
         }
 
+        [Test]
+        public void Test3()
+        {
+            ConfiguredProject confproject = _vcproject.GetConfiguredProject();
+
+            MSBuildProjectXmlService service = confproject.GetProjectXmlService();
+            MSBuildProjectXmlContainer containerUser = service.GetProjectXml(".user");
+            using (var wrapper = containerUser.GlobalCheckout(true))
+            {
+                ProjectRootElement rootElement = wrapper.ProjectXml;
+
+                ProjectPropertyGroupElement group = rootElement.AddPropertyGroup();
+                ProjectPropertyElement propElement = rootElement.CreatePropertyElement("test6");
+                group.AppendChild(propElement);
+                propElement.Value = "Ciao";
+            }
+
+            MSBuildProjectXmlContainer containerProject = service.GetProjectXml(String.Empty);
+            using (var wrapper = containerProject.GlobalCheckout(true))
+            {
+                ProjectRootElement rootElement = wrapper.ProjectXml;
+
+                ProjectPropertyGroupElement group = rootElement.AddPropertyGroup();
+                ProjectPropertyElement propElement = rootElement.CreatePropertyElement("test6");
+                group.AppendChild(propElement);
+                propElement.Value = "Ciao";
+            }
+            _project.Save();
+        }
 
         [Test]
         public void ConfigurationType()
