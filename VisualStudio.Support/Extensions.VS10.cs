@@ -43,7 +43,7 @@ namespace VisualStudio.Support
 
         public static ConfiguredProject GetConfiguredProject(this VCProject project)
         {
-            return _PropGetterConf.GetValue(project, null) as ConfiguredProject;
+            return _PropGetterProj.GetValue(project, null) as ConfiguredProject;
         }
 
         public static ConfiguredProject GetConfiguredProject(this VCConfiguration configuration)
@@ -54,6 +54,16 @@ namespace VisualStudio.Support
         public static MSBuildProjectService GetProjectService(this ConfiguredProject confproj)
         {
             return confproj.GetServiceFeature<MSBuildProjectService>();
+        }
+
+        public static MSBuildProjectCollectionXmlService GetProjectCollectionXmlService(this ConfiguredProject confproj)
+        {
+            return confproj.GetServiceFeature<MSBuildProjectCollectionXmlService>();
+        }
+
+        public static MSBuildProjectXmlService GetProjectXmlService(this ConfiguredProject confproj)
+        {
+            return confproj.GetServiceFeature<MSBuildProjectXmlService>();
         }
 
         public static IProjectPropertiesProvider GetProjectPropertiesProvider(this ConfiguredProject project)
