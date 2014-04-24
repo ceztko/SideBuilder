@@ -8,6 +8,8 @@ using System.Diagnostics;
 using Support.VisualStudio;
 using Microsoft.Build.Evaluation;
 using System.IO;
+using Microsoft.Build.Construction;
+using SideBuilder.Core;
 
 namespace VisualStudio.Probe
 {
@@ -26,36 +28,35 @@ namespace VisualStudio.Probe
             string tempDir = @"C:\Users\ceztko\Temp";
             ProjectCollection collection = ProjectCollection.GlobalProjectCollection;
 
-            Dictionary<string, string> globalProperties = new Dictionary<string, string>();
-            globalProperties.Add("DevEnvDir", "c:\\Program Files %28x86%29\\Microsoft Visual Studio 10.0\\Common7\\IDE\\");
-            globalProperties.Add("SolutionDir", "C:\\Users\\ceztko\\Temp\\VsProbe\\");
-            globalProperties.Add("SolutionExt", ".sln");
-            globalProperties.Add("SolutionFileName", "NewSolution.sln");
-            globalProperties.Add("SolutionName", "NewSolution");
-            globalProperties.Add("SolutionPath", "C:\\Users\\ceztko\\Temp\\VsProbe\\NewSolution.sln");
-            globalProperties.Add("LangID", "1033");
-            globalProperties.Add("Platform", "Win32");
-            globalProperties.Add("Configuration", "Debug");
+            Dictionary<string, string> globalProperties = BuilderCore.GetGlobalProperties(
+                "NewSolution", "C:\\Users\\ceztko\\Temp\\VsProbe\\", "NewSolution.sln",
+                "C:\\Users\\ceztko\\Temp\\VsProbe\\NewSolution.sln", ".sln",
+                "Debug", "Win32", "1033");
 
-            Project debugProject = new Project("C:\\Users\\ceztko\\Temp\\VsProbe\\Test\\Test.vcxproj", globalProperties, null, null, collection, ProjectLoadSettings.RecordDuplicateButNotCircularImports | ProjectLoadSettings.RejectCircularImports);
+            Project debugProject = BuilderCore.LoadProject("C:\\Users\\ceztko\\Temp\\VsProbe\\Test\\Test.vcxproj",
+                collection, globalProperties);
+
+            HashSet<string> test = new HashSet<string>();
+            foreach (ProjectItem item in debugProject.ItemsIgnoringCondition)
+            {
+                test.Add(item.ItemType);
+            }
+
+            BuilderCore.Process(debugProject);
+
             using (var writer = new StreamWriter(Path.Combine(tempDir, "debug.txt")))
             {
                 foreach (ResolvedImport import in debugProject.Imports)
                     writer.WriteLine(import.ImportedProject.FullPath);
             }
 
-            globalProperties = new Dictionary<string, string>();
-            globalProperties.Add("DevEnvDir", "c:\\Program Files %28x86%29\\Microsoft Visual Studio 10.0\\Common7\\IDE\\");
-            globalProperties.Add("SolutionDir", "C:\\Users\\ceztko\\Temp\\VsProbe\\");
-            globalProperties.Add("SolutionExt", ".sln");
-            globalProperties.Add("SolutionFileName", "NewSolution.sln");
-            globalProperties.Add("SolutionName", "NewSolution");
-            globalProperties.Add("SolutionPath", "C:\\Users\\ceztko\\Temp\\VsProbe\\NewSolution.sln");
-            globalProperties.Add("LangID", "1033");
-            globalProperties.Add("Platform", "Win32");
-            globalProperties.Add("Configuration", "Release");
+            globalProperties = BuilderCore.GetGlobalProperties(
+                "NewSolution", "C:\\Users\\ceztko\\Temp\\VsProbe\\", "NewSolution.sln",
+                "C:\\Users\\ceztko\\Temp\\VsProbe\\NewSolution.sln", ".sln", "Release",
+                "Win32", "1033");
 
-            Project releaseProject = new Project("C:\\Users\\ceztko\\Temp\\VsProbe\\Test\\Test.vcxproj", globalProperties, null, null, collection, ProjectLoadSettings.RecordDuplicateButNotCircularImports | ProjectLoadSettings.RejectCircularImports);
+            Project releaseProject = BuilderCore.LoadProject("C:\\Users\\ceztko\\Temp\\VsProbe\\Test\\Test.vcxproj",
+                collection, globalProperties);
             using (var writer = new StreamWriter(Path.Combine(tempDir, "release.txt")))
             {
                 foreach (ResolvedImport import in releaseProject.Imports)
