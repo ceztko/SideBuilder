@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualStudio.Probe.VS10", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{104D0EF1-933F-4406-ABD3-F37C8DEA22B7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SideBuilder.Core", "SideBuilder.Core\SideBuilder.Core.csproj", "{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,16 @@ Global
 		{104D0EF1-933F-4406-ABD3-F37C8DEA22B7}.Release|Mixed Platforms.Build.0 = Release|x86
 		{104D0EF1-933F-4406-ABD3-F37C8DEA22B7}.Release|x86.ActiveCfg = Release|x86
 		{104D0EF1-933F-4406-ABD3-F37C8DEA22B7}.Release|x86.Build.0 = Release|x86
+		{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
