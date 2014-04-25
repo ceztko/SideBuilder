@@ -31,7 +31,7 @@ using System.Runtime.Serialization;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Internal.Expressions;
 
-namespace Microsoft.Build.Exceptions
+namespace Microsoft.Build.Internal
 {
         [Serializable]
         public sealed class InvalidProjectFileException : Exception

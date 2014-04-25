@@ -5,7 +5,6 @@
 using System;
 using System.Text;
 using Microsoft.Build.Evaluation;
-using Microsoft.Build.Exceptions;
 using Microsoft.Build.Framework;
 
 /*

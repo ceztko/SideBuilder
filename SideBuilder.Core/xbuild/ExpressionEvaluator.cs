@@ -28,7 +28,6 @@
 using System;
 using System.Linq;
 using Microsoft.Build.Evaluation;
-using Microsoft.Build.Exceptions;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Build.Execution;
@@ -136,7 +135,7 @@ namespace Microsoft.Build.Internal.Expressions
 			if (Evaluator.Project != null)
 				return Evaluator.Project.AllEvaluatedItems;
 			else
-				return Evaluator.ProjectInstance.AllEvaluatedItems;
+				return Evaluator.ProjectInstance.Items;
 		}
 		
 		public string EvaluateItem (string itemType, object item)
