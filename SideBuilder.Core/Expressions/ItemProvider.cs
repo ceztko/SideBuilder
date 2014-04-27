@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2014 Francesco Pretto
+// This file is subject to the MIT license
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,17 +10,17 @@ using Microsoft.Build.Evaluation;
 
 namespace Microsoft.Build.Expressions.Internal
 {
-    internal interface IItemProvider
+    internal interface ItemProvider
     {
-        public abstract string EvaluatedInclude
+        string EvaluatedInclude
         {
             get;
         }
 
-        public abstract string GetMetadataValue(string name);
+        string GetMetadataValue(string name);
     }
 
-    internal class ProjectItemProvider : IItemProvider
+    internal class ProjectItemProvider : ItemProvider
     {
         private ProjectItem _item;
 
@@ -26,18 +29,18 @@ namespace Microsoft.Build.Expressions.Internal
             _item = item;
         }
 
-        public override string EvaluatedInclude
+        public string EvaluatedInclude
         {
             get { return _item.EvaluatedInclude; }
         }
 
-        public override string GetMetadataValue(string name)
+        public string GetMetadataValue(string name)
         {
             return _item.GetMetadataValue(name);
         }
     }
 
-    internal class ProjectItemInstanceProvider : IItemProvider
+    internal class ProjectItemInstanceProvider : ItemProvider
     {
         private ProjectItemInstance _item;
 
@@ -46,14 +49,28 @@ namespace Microsoft.Build.Expressions.Internal
             _item = item;
         }
 
-        public override string EvaluatedInclude
+        public string EvaluatedInclude
         {
             get { return _item.EvaluatedInclude; }
         }
 
-        public override string GetMetadataValue(string name)
+        public string GetMetadataValue(string name)
         {
             return _item.GetMetadataValue(name);
+        }
+    }
+
+    internal class ItemProviderImpl : ItemProvider
+    {
+        public string EvaluatedInclude
+        {
+            get;
+            set;
+        }
+
+        public string GetMetadataValue(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

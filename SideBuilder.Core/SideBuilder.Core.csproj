@@ -48,14 +48,17 @@
     <Compile Include="BuilderCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support.cs" />
-    <Compile Include="xbuild\ExpressionConstructs.cs" />
-    <Compile Include="xbuild\ExpressionEvaluator.cs" />
-    <Compile Include="xbuild\ExpressionParser.cs" />
-    <Compile Include="xbuild\ExpressionParserManual.cs" />
-    <Compile Include="xbuild\ExpressionTokenizer.cs" />
-    <Compile Include="xbuild\InvalidProjectFileException.cs" />
-    <Compile Include="xbuild\MSBuildUtils.cs" />
-    <Compile Include="xbuild\WindowsCompatibilityExtensions.cs" />
+    <Compile Include="Expressions\ExpressionConstructs.cs" />
+    <Compile Include="Expressions\ExpressionEvaluator.cs" />
+    <Compile Include="Expressions\ExpressionParser.cs" />
+    <Compile Include="Expressions\ExpressionParserManual.cs" />
+    <Compile Include="Expressions\ExpressionTokenizer.cs" />
+    <Compile Include="Expressions\InvalidProjectFileException.cs" />
+    <Compile Include="Expressions\ItemProvider.cs" />
+    <Compile Include="Expressions\MSBuildUtils.cs" />
+    <Compile Include="Expressions\PropertyProvider.cs" />
+    <Compile Include="Expressions\PropertyItemProvider.cs" />
+    <Compile Include="Expressions\WindowsCompatibilityExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

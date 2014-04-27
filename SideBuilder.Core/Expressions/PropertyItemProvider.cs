@@ -10,19 +10,19 @@ using Microsoft.Build.Execution;
 
 namespace Microsoft.Build.Expressions.Internal
 {
-    internal interface IPropertyItemProvider
+    internal interface PropertyItemProvider
     {
-        IEnumerable<IItemProvider> GetItems(string name);
+        IEnumerable<ItemProvider> GetItems(string name);
 
-        IEnumerable<IItemProvider> AllItems
+        IEnumerable<ItemProvider> AllItems
         {
             get;
         }
 
-        IPropertyProvider GetProperty(string name);
+        PropertyProvider GetProperty(string name);
     }
 
-    internal class ProjectProvider : IPropertyItemProvider
+    internal class ProjectProvider : PropertyItemProvider
     {
         private Project _project;
 
@@ -31,13 +31,13 @@ namespace Microsoft.Build.Expressions.Internal
             _project = project;
         }
 
-        public override IEnumerable<IItemProvider> GetItems(string name)
+        public IEnumerable<ItemProvider> GetItems(string name)
         {
             foreach (ProjectItem item in _project.GetItems(name))
                 yield return new ProjectItemProvider(item);
         }
 
-        public override IEnumerable<IItemProvider> AllItems
+        public IEnumerable<ItemProvider> AllItems
         {
             get
             {
@@ -46,14 +46,14 @@ namespace Microsoft.Build.Expressions.Internal
             }
         }
 
-        public override IPropertyProvider GetProperty(string name)
+        public PropertyProvider GetProperty(string name)
         {
             ProjectProperty obj = _project.GetProperty(name);
             return obj == null ? null : new ProjectPropertyProvider(_project.GetProperty(name));
         }
     }
 
-    internal class ProjectInstanceProvider : IPropertyItemProvider
+    internal class ProjectInstanceProvider : PropertyItemProvider
     {
         private ProjectInstance _project;
 
@@ -62,13 +62,13 @@ namespace Microsoft.Build.Expressions.Internal
             _project = project;
         }
 
-        public override IEnumerable<IItemProvider> GetItems(string name)
+        public IEnumerable<ItemProvider> GetItems(string name)
         {
             foreach (ProjectItemInstance item in _project.GetItems(name))
                 yield return new ProjectItemInstanceProvider(item);
         }
 
-        public override IEnumerable<IItemProvider> AllItems
+        public IEnumerable<ItemProvider> AllItems
         {
             get
             {
@@ -77,10 +77,35 @@ namespace Microsoft.Build.Expressions.Internal
             }
         }
 
-        public override IPropertyProvider GetProperty(string name)
+        public PropertyProvider GetProperty(string name)
         {
             ProjectPropertyInstance obj = _project.GetProperty(name);
             return obj == null ? null : new ProjectPropertyInstanceProvider(_project.GetProperty(name));
+        }
+    }
+
+    internal class PropertyItemProviderImpl : PropertyItemProvider
+    {
+        private Dictionary<string, ProjectPropertyImpl> _properties;
+
+        public PropertyItemProviderImpl()
+        {
+            _properties = new Dictionary<string, ProjectPropertyImpl>();
+        }
+
+        public IEnumerable<ItemProvider> GetItems(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ItemProvider> AllItems
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public PropertyProvider GetProperty(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

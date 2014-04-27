@@ -56,7 +56,7 @@ namespace Microsoft.Build.Expressions.Internal
 			return new EvaluationContext (source, this);
 		}
 
-        public IPropertyItemProvider Project { get; private set; }
+        public PropertyItemProvider Project { get; private set; }
 		
 		public string ReplacementForMissingPropertyAndItem { get; set; }
 		
@@ -101,12 +101,12 @@ namespace Microsoft.Build.Expressions.Internal
 		public string Source { get; private set; }
 		
 		public ExpressionEvaluator Evaluator { get; private set; }
-		public IItemProvider ContextItem { get; set; }
+		public ItemProvider ContextItem { get; set; }
 
-        Stack<IItemProvider> evaluating_items = new Stack<IItemProvider>();
-        Stack<IPropertyProvider> evaluating_props = new Stack<IPropertyProvider>();
+        Stack<ItemProvider> evaluating_items = new Stack<ItemProvider>();
+        Stack<PropertyProvider> evaluating_props = new Stack<PropertyProvider>();
 		
-		public string EvaluateItem (string itemType, IItemProvider item)
+		public string EvaluateItem (string itemType, ItemProvider item)
 		{
 			if (evaluating_items.Contains (item))
 				throw new InvalidProjectFileException (string.Format ("Recursive reference to item '{0}' was found", itemType));
@@ -127,7 +127,7 @@ namespace Microsoft.Build.Expressions.Internal
             return prop.EvaluatedValue;
 		}
 		
-		public string EvaluateProperty (IPropertyProvider prop, string name, string value)
+		public string EvaluateProperty (PropertyProvider prop, string name, string value)
 		{
 			if (evaluating_props.Contains (prop))
 				throw new InvalidProjectFileException (string.Format ("Recursive reference to property '{0}' was found", name));
@@ -404,11 +404,11 @@ namespace Microsoft.Build.Expressions.Internal
 		{
 			string itemType = this.Access.ItemType != null ? this.Access.ItemType.Name : null;
 			string metadataName = Access.Metadata.Name;
-			IEnumerable<IItemProvider> items;
+			IEnumerable<ItemProvider> items;
 			if (this.Access.ItemType != null)
 				items = context.Evaluator.Project.GetItems (itemType);
 			else if (context.ContextItem != null)
-                items = new IItemProvider[] { context.ContextItem };
+                items = new ItemProvider[] { context.ContextItem };
 			else
 				items = context.Evaluator.Project.AllItems;
 			
