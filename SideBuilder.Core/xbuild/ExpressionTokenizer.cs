@@ -219,7 +219,7 @@ namespace Microsoft.Build.Internal.Expressions
 		}
 		string spaces = " \t\r\n";
 
-		static readonly char [] token_starter_chars = ".,[]()-=:!><$@%\"' ".ToCharArray ();
+        static readonly char[] token_starter_chars = ".,[]()-=:!><$@%\"' \t\r\n".ToCharArray();
 		
 		void ReadStringLiteral (string source, char c)
 		{
