@@ -42,38 +42,21 @@ namespace Microsoft.Build.Expressions.Internal
 		public ExpressionEvaluator (Project project, string replacementForMissingPropertyAndItem)
 		{
 			ReplacementForMissingPropertyAndItem = replacementForMissingPropertyAndItem;
-			Project = project;
-			/*
-			GetItems = (name) => project.GetItems (name).Select (i => new KeyValuePair<string,string> (i.ItemType, i.EvaluatedInclude));
-			GetProperty = (name) => {
-				var prop = project.GetProperty (name);
-				return new KeyValuePair<string,string> (prop != null ? prop.Name : null, prop != null ? prop.EvaluatedValue : null);
-				};
-			*/
+            Project = new ProjectProvider(project);
 		}
 		
 		public ExpressionEvaluator (ProjectInstance project, string replacementForMissingPropertyAndItem)
 		{
 			ReplacementForMissingPropertyAndItem = replacementForMissingPropertyAndItem;
-			ProjectInstance = project;
-			/*
-			GetItems = (name) => project.GetItems (name).Select (i => new KeyValuePair<string,string> (i.ItemType, i.EvaluatedInclude));
-			GetProperty = (name) => {
-				var prop = project.GetProperty (name);
-				return new KeyValuePair<string,string> (prop != null ? prop.Name : null, prop != null ? prop.EvaluatedValue : null);
-				};
-			*/
+            Project = new ProjectInstanceProvider(project);
 		}
 		
 		EvaluationContext CreateContext (string source)
 		{
 			return new EvaluationContext (source, this);
 		}
-		
-		public Project Project { get; private set; }
-		public ProjectInstance ProjectInstance { get; set; }
-		//public Func<string,IEnumerable<KeyValuePair<string,string>>> GetItems { get; private set; }
-		//public Func<string,KeyValuePair<string,string>> GetProperty { get; private set; }
+
+        public IPropertyItemProvider Project { get; private set; }
 		
 		public string ReplacementForMissingPropertyAndItem { get; set; }
 		
@@ -118,38 +101,18 @@ namespace Microsoft.Build.Expressions.Internal
 		public string Source { get; private set; }
 		
 		public ExpressionEvaluator Evaluator { get; private set; }
-		public object ContextItem { get; set; }
-		
-		Stack<object> evaluating_items = new Stack<object> ();
-		Stack<object> evaluating_props = new Stack<object> ();
-		
-		public IEnumerable<object> GetItems (string name)
-		{
-			if (Evaluator.Project != null)
-				return Evaluator.Project.GetItems (name);
-			else
-				return Evaluator.ProjectInstance.GetItems (name);
-		}
+		public IItemProvider ContextItem { get; set; }
 
-		public IEnumerable<object> GetAllItems ()
-		{
-			if (Evaluator.Project != null)
-				return Evaluator.Project.AllEvaluatedItems;
-			else
-				return Evaluator.ProjectInstance.Items;
-		}
+        Stack<IItemProvider> evaluating_items = new Stack<IItemProvider>();
+        Stack<IPropertyProvider> evaluating_props = new Stack<IPropertyProvider>();
 		
-		public string EvaluateItem (string itemType, object item)
+		public string EvaluateItem (string itemType, IItemProvider item)
 		{
 			if (evaluating_items.Contains (item))
 				throw new InvalidProjectFileException (string.Format ("Recursive reference to item '{0}' was found", itemType));
 			try {
 				evaluating_items.Push (item);
-				var eval = item as ProjectItem;
-				if (eval != null)
-					return Evaluator.Evaluate (eval.EvaluatedInclude);
-				else
-					return Evaluator.Evaluate (((ProjectItemInstance) item).EvaluatedInclude);
+                return item.EvaluatedInclude;
 			} finally {
 				evaluating_items.Pop ();
 			}
@@ -157,20 +120,14 @@ namespace Microsoft.Build.Expressions.Internal
 				
 		public string EvaluateProperty (string name)
 		{
-			if (Evaluator.Project != null) {
-				var prop = Evaluator.Project.GetProperty (name);
-				if (prop == null)
-					return null;
-				return EvaluateProperty (prop, prop.Name, prop.EvaluatedValue);
-			} else {
-				var prop = Evaluator.ProjectInstance.GetProperty (name);
-				if (prop == null)
-					return null;
-				return EvaluateProperty (prop, prop.Name, prop.EvaluatedValue);
-			}
+            var prop = Evaluator.Project.GetProperty (name);
+            if (prop == null)
+                return null;
+
+            return prop.EvaluatedValue;
 		}
 		
-		public string EvaluateProperty (object prop, string name, string value)
+		public string EvaluateProperty (IPropertyProvider prop, string name, string value)
 		{
 			if (evaluating_props.Contains (prop))
 				throw new InvalidProjectFileException (string.Format ("Recursive reference to property '{0}' was found", name));
@@ -416,7 +373,7 @@ namespace Microsoft.Build.Expressions.Internal
 		public override string EvaluateAsString (EvaluationContext context)
 		{
 			string itemType = Application.Name.Name;
-			var items = context.GetItems (itemType);
+			var items = context.Evaluator.Project.GetItems (itemType);
 			if (!items.Any ())
 				return context.Evaluator.ReplacementForMissingPropertyAndItem;
 			if (Application.Expressions == null)
@@ -447,15 +404,15 @@ namespace Microsoft.Build.Expressions.Internal
 		{
 			string itemType = this.Access.ItemType != null ? this.Access.ItemType.Name : null;
 			string metadataName = Access.Metadata.Name;
-			IEnumerable<object> items;
+			IEnumerable<IItemProvider> items;
 			if (this.Access.ItemType != null)
-				items = context.GetItems (itemType);
+				items = context.Evaluator.Project.GetItems (itemType);
 			else if (context.ContextItem != null)
-				items = new Object [] { context.ContextItem };
+                items = new IItemProvider[] { context.ContextItem };
 			else
-				items = context.GetAllItems ();
+				items = context.Evaluator.Project.AllItems;
 			
-			var values = items.Select (i => (i is ProjectItem) ? ((ProjectItem) i).GetMetadataValue (metadataName) : ((ProjectItemInstance) i).GetMetadataValue (metadataName)).Where (s => !string.IsNullOrEmpty (s));
+			var values = items.Select (i => i.GetMetadataValue(metadataName)).Where (s => !string.IsNullOrEmpty (s));
 			return string.Join (";", values);
 		}
 		
