@@ -6,7 +6,6 @@
 using System;
 using System.Text;
 using Microsoft.Build.Evaluation;
-using Microsoft.Build.Exceptions;
 using Microsoft.Build.Framework;
 
 /*
@@ -45,7 +44,7 @@ it is likely that the MS tokenizer is hand-written.
 
 */
 
-namespace Microsoft.Build.Internal.Expressions
+namespace Microsoft.Build.Expressions.Internal
 {
 	class ExpressionParser
 	{
@@ -373,147 +372,147 @@ namespace Microsoft.Build.Internal.Expressions
         yyVal = yyV > yyTop ? null : yyVals[yyV]; // yyVal = yyDefault(yyV > yyTop ? null : yyVals[yyV]);
         switch (yyN) {
 case 1:
-#line 124 "ExpressionParser.jay"
+#line 123 "ExpressionParser.jay"
   { yyVal = new ExpressionList (); }
   break;
 case 2:
-#line 126 "ExpressionParser.jay"
+#line 125 "ExpressionParser.jay"
   { yyVal = ((ExpressionList) yyVals[-1+yyTop]).Add ((Expression) yyVals[0+yyTop]); }
   break;
 case 5:
-#line 136 "ExpressionParser.jay"
+#line 135 "ExpressionParser.jay"
   { yyVal = Binary (Operator.And, yyVals[-2+yyTop], yyVals[0+yyTop]); }
   break;
 case 6:
-#line 138 "ExpressionParser.jay"
+#line 137 "ExpressionParser.jay"
   { yyVal = Binary (Operator.Or, yyVals[-2+yyTop], yyVals[0+yyTop]); }
   break;
 case 8:
-#line 144 "ExpressionParser.jay"
+#line 143 "ExpressionParser.jay"
   { yyVal = Binary (Operator.EQ, yyVals[-2+yyTop], yyVals[0+yyTop]); }
   break;
 case 9:
-#line 146 "ExpressionParser.jay"
+#line 145 "ExpressionParser.jay"
   { yyVal = Binary (Operator.NE, yyVals[-2+yyTop], yyVals[0+yyTop]); }
   break;
 case 10:
-#line 148 "ExpressionParser.jay"
+#line 147 "ExpressionParser.jay"
   { yyVal = Binary (Operator.GT, yyVals[-2+yyTop], yyVals[0+yyTop]); }
   break;
 case 11:
-#line 150 "ExpressionParser.jay"
+#line 149 "ExpressionParser.jay"
   { yyVal = Binary (Operator.GE, yyVals[-2+yyTop], yyVals[0+yyTop]); }
   break;
 case 12:
-#line 152 "ExpressionParser.jay"
+#line 151 "ExpressionParser.jay"
   { yyVal = Binary (Operator.LT, yyVals[-2+yyTop], yyVals[0+yyTop]); }
   break;
 case 13:
-#line 154 "ExpressionParser.jay"
+#line 153 "ExpressionParser.jay"
   { yyVal = Binary (Operator.LE, yyVals[-2+yyTop], yyVals[0+yyTop]); }
   break;
 case 15:
-#line 160 "ExpressionParser.jay"
+#line 159 "ExpressionParser.jay"
   { yyVal = new NotExpression () { Negated = (Expression) yyVals[0+yyTop], Location = (ILocation) yyVals[-1+yyTop] }; }
   break;
 case 24:
-#line 176 "ExpressionParser.jay"
+#line 175 "ExpressionParser.jay"
   { yyVal = new BooleanLiteral () { Value = true, Location = (ILocation) yyVals[0+yyTop] }; }
   break;
 case 25:
-#line 178 "ExpressionParser.jay"
+#line 177 "ExpressionParser.jay"
   { yyVal = new BooleanLiteral () { Value = false, Location = (ILocation) yyVals[0+yyTop] }; }
   break;
 case 26:
-#line 183 "ExpressionParser.jay"
+#line 182 "ExpressionParser.jay"
   { yyVal = new PropertyAccessExpression () { Access = (PropertyAccess) yyVals[-1+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
   break;
 case 27:
-#line 188 "ExpressionParser.jay"
+#line 187 "ExpressionParser.jay"
   { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[0+yyTop], TargetType = PropertyTargetType.Object, Location = (NameToken) yyVals[0+yyTop] }; }
   break;
 case 28:
-#line 190 "ExpressionParser.jay"
+#line 189 "ExpressionParser.jay"
   { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[0+yyTop], Target = (Expression) yyVals[-2+yyTop], TargetType = PropertyTargetType.Object, Location = (ILocation) yyVals[-2+yyTop] }; }
   break;
 case 29:
-#line 192 "ExpressionParser.jay"
+#line 191 "ExpressionParser.jay"
   { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[-2+yyTop], Target = (Expression) yyVals[-4+yyTop], TargetType = PropertyTargetType.Object, Arguments = new ExpressionList (), Location = (ILocation) yyVals[-4+yyTop] }; }
   break;
 case 30:
-#line 194 "ExpressionParser.jay"
+#line 193 "ExpressionParser.jay"
   { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[-3+yyTop], Target = (Expression) yyVals[-5+yyTop], TargetType = PropertyTargetType.Object, Arguments = (ExpressionList) yyVals[-1+yyTop], Location = (ILocation) yyVals[-5+yyTop] }; }
   break;
 case 31:
-#line 196 "ExpressionParser.jay"
+#line 195 "ExpressionParser.jay"
   { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[0+yyTop], Target = (Expression) yyVals[-3+yyTop], TargetType = PropertyTargetType.Type, Location = (ILocation) yyVals[-4+yyTop] }; }
   break;
 case 32:
-#line 198 "ExpressionParser.jay"
+#line 197 "ExpressionParser.jay"
   { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[-3+yyTop], Target = (Expression) yyVals[-6+yyTop], TargetType = PropertyTargetType.Type, Arguments = (ExpressionList) yyVals[-1+yyTop], Location = (ILocation) yyVals[-7+yyTop] }; }
   break;
 case 33:
-#line 203 "ExpressionParser.jay"
+#line 202 "ExpressionParser.jay"
   { yyVal = new StringLiteral () { Value = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
   break;
 case 35:
-#line 209 "ExpressionParser.jay"
+#line 208 "ExpressionParser.jay"
   { yyVal = new NameToken () { Name = ((NameToken) yyVals[-2+yyTop]).Name + "." + ((NameToken) yyVals[0+yyTop]).Name, Column = ((ILocation) yyVals[-2+yyTop]).Column }; }
   break;
 case 36:
-#line 214 "ExpressionParser.jay"
+#line 213 "ExpressionParser.jay"
   { yyVal = new ItemAccessExpression () { Application = (ItemApplication) yyVals[-1+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
   break;
 case 37:
-#line 220 "ExpressionParser.jay"
+#line 219 "ExpressionParser.jay"
   { yyVal = new ItemApplication () { Name = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
   break;
 case 38:
-#line 222 "ExpressionParser.jay"
+#line 221 "ExpressionParser.jay"
   { yyVal = new ItemApplication () { Name = (NameToken) yyVals[-2+yyTop], Expressions = (ExpressionList) yyVals[0+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
   break;
 case 39:
-#line 227 "ExpressionParser.jay"
+#line 226 "ExpressionParser.jay"
   { yyVal = new MetadataAccessExpression () { Access = (MetadataAccess) yyVals[-1+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
   break;
 case 40:
-#line 233 "ExpressionParser.jay"
+#line 232 "ExpressionParser.jay"
   { yyVal = new MetadataAccess () { Metadata = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
   break;
 case 41:
-#line 235 "ExpressionParser.jay"
+#line 234 "ExpressionParser.jay"
   { yyVal = new MetadataAccess () { ItemType = (NameToken) yyVals[-2+yyTop], Metadata = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
   break;
 case 42:
-#line 240 "ExpressionParser.jay"
+#line 239 "ExpressionParser.jay"
   { yyVal = new StringLiteral () { Value = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
   break;
 case 43:
-#line 245 "ExpressionParser.jay"
+#line 244 "ExpressionParser.jay"
   { yyVal = new RawStringLiteral () { Value = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
   break;
 case 44:
-#line 247 "ExpressionParser.jay"
+#line 246 "ExpressionParser.jay"
   { yyVal = new FunctionCallExpression () { Name = (NameToken) yyVals[-2+yyTop], Arguments = new ExpressionList (), Location = (ILocation) yyVals[-2+yyTop] }; }
   break;
 case 45:
-#line 249 "ExpressionParser.jay"
+#line 248 "ExpressionParser.jay"
   { yyVal = new FunctionCallExpression () { Name = (NameToken) yyVals[-3+yyTop], Arguments = (ExpressionList) yyVals[-1+yyTop], Location = (ILocation) yyVals[-3+yyTop] }; }
   break;
 case 46:
-#line 254 "ExpressionParser.jay"
+#line 253 "ExpressionParser.jay"
   { yyVal = new ExpressionList (); }
   break;
 case 47:
-#line 256 "ExpressionParser.jay"
+#line 255 "ExpressionParser.jay"
   { yyVal = new ExpressionList ().Add ((Expression) yyVals[0+yyTop]); }
   break;
 case 48:
-#line 258 "ExpressionParser.jay"
+#line 257 "ExpressionParser.jay"
   { yyVal = ((ExpressionList) yyVals[-2+yyTop]).Add ((Expression) yyVals[0+yyTop]); }
   break;
 case 49:
-#line 263 "ExpressionParser.jay"
+#line 262 "ExpressionParser.jay"
   { yyVal = (Expression) yyVals[-1+yyTop]; }
   break;
 #line default
@@ -681,7 +680,7 @@ case 49:
   274,  275,   -1,   -1,   -1,   -1,  280,
   };
 
-#line 266 "ExpressionParser.jay"
+#line 265 "ExpressionParser.jay"
 
 
 	}

@@ -29,9 +29,9 @@
 using System;
 using System.Runtime.Serialization;
 using Microsoft.Build.Construction;
-using Microsoft.Build.Internal.Expressions;
+using Microsoft.Build.Expressions.Internal;
 
-namespace Microsoft.Build.Internal
+namespace Microsoft.Build.Expressions
 {
         [Serializable]
         public sealed class InvalidProjectFileException : Exception

@@ -30,7 +30,6 @@
 using System;
 using System.Text;
 using Microsoft.Build.Evaluation;
-using Microsoft.Build.Exceptions;
 using Microsoft.Build.Framework;
 
 /*
@@ -69,7 +68,7 @@ it is likely that the MS tokenizer is hand-written.
 
 */
 
-namespace Microsoft.Build.Internal.Expressions
+namespace Microsoft.Build.Expressions.Internal
 {
 	class ExpressionParser
 	{

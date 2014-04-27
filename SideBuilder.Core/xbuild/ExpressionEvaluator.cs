@@ -33,8 +33,9 @@ using System.Reflection;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using System.IO;
+using Microsoft.Build.Internal;
 
-namespace Microsoft.Build.Internal.Expressions
+namespace Microsoft.Build.Expressions.Internal
 {
 	class ExpressionEvaluator
 	{

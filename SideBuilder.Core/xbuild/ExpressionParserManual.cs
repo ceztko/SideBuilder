@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Build.Internal.Expressions
+namespace Microsoft.Build.Expressions.Internal
 {
 	class ExpressionParserManual
 	{

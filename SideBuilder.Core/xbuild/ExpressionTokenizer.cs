@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Build.Evaluation;
 
-namespace Microsoft.Build.Internal.Expressions
+namespace Microsoft.Build.Expressions.Internal
 {
 	enum ExpressionValidationType
 	{
