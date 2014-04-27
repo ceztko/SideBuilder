@@ -188,6 +188,10 @@ PropertyAccess
 	  { $$ = new PropertyAccess () { Name = (NameToken) $1, TargetType = PropertyTargetType.Object, Location = (NameToken) $1 }; }
 	| Expression DOT NAME
 	  { $$ = new PropertyAccess () { Name = (NameToken) $3, Target = (Expression) $1, TargetType = PropertyTargetType.Object, Location = (ILocation) $1 }; }
+	| Expression DOT NAME PAREN_OPEN PAREN_CLOSE
+	  { $$ = new PropertyAccess () { Name = (NameToken) $3, Target = (Expression) $1, TargetType = PropertyTargetType.Object, Arguments = new ExpressionList (), Location = (ILocation) $1 }; }
+	| Expression DOT NAME PAREN_OPEN FunctionCallArguments PAREN_CLOSE
+	  { $$ = new PropertyAccess () { Name = (NameToken) $3, Target = (Expression) $1, TargetType = PropertyTargetType.Object, Arguments = (ExpressionList) $5, Location = (ILocation) $1 }; }
 	| BRACE_OPEN QualifiedNameExpression BRACE_CLOSE COLON2 NAME
 	  { $$ = new PropertyAccess () { Name = (NameToken) $5, Target = (Expression) $2, TargetType = PropertyTargetType.Type, Location = (ILocation) $1 }; }
 	| BRACE_OPEN QualifiedNameExpression BRACE_CLOSE COLON2 NAME PAREN_OPEN FunctionCallArguments PAREN_CLOSE

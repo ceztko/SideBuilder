@@ -1,10 +1,12 @@
 // created by jay 0.7 (c) 1998 Axel.Schreiner@informatik.uni-osnabrueck.de
 
-#line 29 "ExpressionParser.jay"
+#line 28 "ExpressionParser.jay"
+
 
 using System;
 using System.Text;
 using Microsoft.Build.Evaluation;
+using Microsoft.Build.Exceptions;
 using Microsoft.Build.Framework;
 
 /*
@@ -132,6 +134,8 @@ namespace Microsoft.Build.Internal.Expressions
     "PropertyAccessExpression : PROP_OPEN PropertyAccess PAREN_CLOSE",
     "PropertyAccess : NAME",
     "PropertyAccess : Expression DOT NAME",
+    "PropertyAccess : Expression DOT NAME PAREN_OPEN PAREN_CLOSE",
+    "PropertyAccess : Expression DOT NAME PAREN_OPEN FunctionCallArguments PAREN_CLOSE",
     "PropertyAccess : BRACE_OPEN QualifiedNameExpression BRACE_CLOSE COLON2 NAME",
     "PropertyAccess : BRACE_OPEN QualifiedNameExpression BRACE_CLOSE COLON2 NAME PAREN_OPEN FunctionCallArguments PAREN_CLOSE",
     "QualifiedNameExpression : QualifiedName",
@@ -434,74 +438,82 @@ case 28:
   break;
 case 29:
 #line 192 "ExpressionParser.jay"
-  { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[0+yyTop], Target = (Expression) yyVals[-3+yyTop], TargetType = PropertyTargetType.Type, Location = (ILocation) yyVals[-4+yyTop] }; }
+  { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[-2+yyTop], Target = (Expression) yyVals[-4+yyTop], TargetType = PropertyTargetType.Object, Arguments = new ExpressionList (), Location = (ILocation) yyVals[-4+yyTop] }; }
   break;
 case 30:
 #line 194 "ExpressionParser.jay"
-  { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[-3+yyTop], Target = (Expression) yyVals[-6+yyTop], TargetType = PropertyTargetType.Type, Arguments = (ExpressionList) yyVals[-1+yyTop], Location = (ILocation) yyVals[-7+yyTop] }; }
+  { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[-3+yyTop], Target = (Expression) yyVals[-5+yyTop], TargetType = PropertyTargetType.Object, Arguments = (ExpressionList) yyVals[-1+yyTop], Location = (ILocation) yyVals[-5+yyTop] }; }
   break;
 case 31:
-#line 199 "ExpressionParser.jay"
-  { yyVal = new StringLiteral () { Value = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
+#line 196 "ExpressionParser.jay"
+  { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[0+yyTop], Target = (Expression) yyVals[-3+yyTop], TargetType = PropertyTargetType.Type, Location = (ILocation) yyVals[-4+yyTop] }; }
+  break;
+case 32:
+#line 198 "ExpressionParser.jay"
+  { yyVal = new PropertyAccess () { Name = (NameToken) yyVals[-3+yyTop], Target = (Expression) yyVals[-6+yyTop], TargetType = PropertyTargetType.Type, Arguments = (ExpressionList) yyVals[-1+yyTop], Location = (ILocation) yyVals[-7+yyTop] }; }
   break;
 case 33:
-#line 205 "ExpressionParser.jay"
-  { yyVal = new NameToken () { Name = ((NameToken) yyVals[-2+yyTop]).Name + "." + ((NameToken) yyVals[0+yyTop]).Name, Column = ((ILocation) yyVals[-2+yyTop]).Column }; }
-  break;
-case 34:
-#line 210 "ExpressionParser.jay"
-  { yyVal = new ItemAccessExpression () { Application = (ItemApplication) yyVals[-1+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
-  break;
-case 35:
-#line 216 "ExpressionParser.jay"
-  { yyVal = new ItemApplication () { Name = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
-  break;
-case 36:
-#line 218 "ExpressionParser.jay"
-  { yyVal = new ItemApplication () { Name = (NameToken) yyVals[-2+yyTop], Expressions = (ExpressionList) yyVals[0+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
-  break;
-case 37:
-#line 223 "ExpressionParser.jay"
-  { yyVal = new MetadataAccessExpression () { Access = (MetadataAccess) yyVals[-1+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
-  break;
-case 38:
-#line 229 "ExpressionParser.jay"
-  { yyVal = new MetadataAccess () { Metadata = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
-  break;
-case 39:
-#line 231 "ExpressionParser.jay"
-  { yyVal = new MetadataAccess () { ItemType = (NameToken) yyVals[-2+yyTop], Metadata = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
-  break;
-case 40:
-#line 236 "ExpressionParser.jay"
+#line 203 "ExpressionParser.jay"
   { yyVal = new StringLiteral () { Value = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
   break;
+case 35:
+#line 209 "ExpressionParser.jay"
+  { yyVal = new NameToken () { Name = ((NameToken) yyVals[-2+yyTop]).Name + "." + ((NameToken) yyVals[0+yyTop]).Name, Column = ((ILocation) yyVals[-2+yyTop]).Column }; }
+  break;
+case 36:
+#line 214 "ExpressionParser.jay"
+  { yyVal = new ItemAccessExpression () { Application = (ItemApplication) yyVals[-1+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
+  break;
+case 37:
+#line 220 "ExpressionParser.jay"
+  { yyVal = new ItemApplication () { Name = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
+  break;
+case 38:
+#line 222 "ExpressionParser.jay"
+  { yyVal = new ItemApplication () { Name = (NameToken) yyVals[-2+yyTop], Expressions = (ExpressionList) yyVals[0+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
+  break;
+case 39:
+#line 227 "ExpressionParser.jay"
+  { yyVal = new MetadataAccessExpression () { Access = (MetadataAccess) yyVals[-1+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
+  break;
+case 40:
+#line 233 "ExpressionParser.jay"
+  { yyVal = new MetadataAccess () { Metadata = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
+  break;
 case 41:
-#line 241 "ExpressionParser.jay"
-  { yyVal = new RawStringLiteral () { Value = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
+#line 235 "ExpressionParser.jay"
+  { yyVal = new MetadataAccess () { ItemType = (NameToken) yyVals[-2+yyTop], Metadata = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[-2+yyTop] }; }
   break;
 case 42:
-#line 243 "ExpressionParser.jay"
-  { yyVal = new FunctionCallExpression () { Name = (NameToken) yyVals[-2+yyTop], Arguments = new ExpressionList (), Location = (ILocation) yyVals[-2+yyTop] }; }
+#line 240 "ExpressionParser.jay"
+  { yyVal = new StringLiteral () { Value = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
   break;
 case 43:
 #line 245 "ExpressionParser.jay"
-  { yyVal = new FunctionCallExpression () { Name = (NameToken) yyVals[-3+yyTop], Arguments = (ExpressionList) yyVals[-1+yyTop], Location = (ILocation) yyVals[-3+yyTop] }; }
+  { yyVal = new RawStringLiteral () { Value = (NameToken) yyVals[0+yyTop], Location = (ILocation) yyVals[0+yyTop] }; }
   break;
 case 44:
-#line 250 "ExpressionParser.jay"
-  { yyVal = new ExpressionList (); }
+#line 247 "ExpressionParser.jay"
+  { yyVal = new FunctionCallExpression () { Name = (NameToken) yyVals[-2+yyTop], Arguments = new ExpressionList (), Location = (ILocation) yyVals[-2+yyTop] }; }
   break;
 case 45:
-#line 252 "ExpressionParser.jay"
-  { yyVal = new ExpressionList ().Add ((Expression) yyVals[0+yyTop]); }
+#line 249 "ExpressionParser.jay"
+  { yyVal = new FunctionCallExpression () { Name = (NameToken) yyVals[-3+yyTop], Arguments = (ExpressionList) yyVals[-1+yyTop], Location = (ILocation) yyVals[-3+yyTop] }; }
   break;
 case 46:
 #line 254 "ExpressionParser.jay"
-  { yyVal = ((ExpressionList) yyVals[-2+yyTop]).Add ((Expression) yyVals[0+yyTop]); }
+  { yyVal = new ExpressionList (); }
   break;
 case 47:
-#line 259 "ExpressionParser.jay"
+#line 256 "ExpressionParser.jay"
+  { yyVal = new ExpressionList ().Add ((Expression) yyVals[0+yyTop]); }
+  break;
+case 48:
+#line 258 "ExpressionParser.jay"
+  { yyVal = ((ExpressionList) yyVals[-2+yyTop]).Add ((Expression) yyVals[0+yyTop]); }
+  break;
+case 49:
+#line 263 "ExpressionParser.jay"
   { yyVal = (Expression) yyVals[-1+yyTop]; }
   break;
 #line default
@@ -544,66 +556,67 @@ case 47:
     0,    0,    1,    2,    2,    2,    3,    3,    3,    3,
     3,    3,    3,    4,    4,    5,    5,    5,    5,    5,
     5,    5,    5,    6,    6,    8,   13,   13,   13,   13,
-   14,   16,   16,    9,   17,   17,   10,   18,   18,    7,
-   11,   11,   11,   15,   15,   15,   12,
+   13,   13,   15,   16,   16,    9,   17,   17,   10,   18,
+   18,    7,   11,   11,   11,   14,   14,   14,   12,
   };
    static readonly short [] yyLen = {           2,
     0,    2,    1,    1,    3,    3,    1,    3,    3,    3,
     3,    3,    3,    1,    2,    1,    1,    1,    1,    1,
-    1,    1,    1,    1,    1,    3,    1,    3,    5,    8,
-    1,    1,    3,    3,    1,    3,    3,    1,    3,    1,
-    1,    3,    4,    0,    1,    3,    3,
+    1,    1,    1,    1,    1,    3,    1,    3,    5,    6,
+    5,    8,    1,    1,    3,    3,    1,    3,    3,    1,
+    3,    1,    1,    3,    4,    0,    1,    3,    3,
   };
    static readonly short [] yyDefRed = {            1,
-    0,   24,   25,   40,    0,    0,    0,    0,    0,    0,
+    0,   24,   25,   42,    0,    0,    0,    0,    0,    0,
     2,    0,    4,    0,   14,   16,   17,   19,   20,   21,
    22,   23,   15,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,   32,    0,    0,    0,   26,    1,   34,    0,   37,
-   47,   42,   45,    0,    0,    0,    8,    9,   10,   11,
-   12,   13,    0,    0,   28,    0,   39,    0,   43,    0,
-   33,   46,    0,    0,    0,   30,
+    0,   34,    0,    0,    0,   26,    1,   36,    0,   39,
+   49,   44,   47,    0,    0,    0,    8,    9,   10,   11,
+   12,   13,    0,    0,    0,    0,   41,    0,   45,    0,
+   35,    0,   48,    0,   29,    0,    0,   30,    0,   32,
   };
   protected static readonly short [] yyDgoto  = {             1,
-   11,   12,   13,   14,   15,   16,   17,   18,   19,   20,
-   21,   22,   27,   43,   54,   44,   29,   31,
+   53,   12,   13,   14,   15,   16,   17,   18,   19,   20,
+   21,   22,   27,   54,   43,   44,   29,   31,
   };
   protected static readonly short [] yySindex = {            0,
- -188,    0,    0,    0, -188, -250, -276, -274, -188, -257,
-    0, -238,    0, -249,    0,    0,    0,    0,    0,    0,
-    0,    0,    0, -261, -257, -244, -243, -248, -231, -222,
- -227, -223, -208, -188, -188, -188, -188, -188, -188, -188,
- -188,    0, -224, -215, -225,    0,    0,    0, -221,    0,
-    0,    0,    0, -265, -238, -238,    0,    0,    0,    0,
-    0,    0, -217, -207,    0, -188,    0, -188,    0, -206,
-    0,    0, -218, -188, -230,    0,
+ -164,    0,    0,    0, -164, -228, -261, -255, -164, -233,
+    0, -263,    0, -201,    0,    0,    0,    0,    0,    0,
+    0,    0,    0, -231, -233, -219, -224, -226, -221, -190,
+ -207, -195, -202, -164, -164, -164, -164, -164, -164, -164,
+ -164,    0, -196, -187, -197,    0,    0,    0, -194,    0,
+    0,    0,    0, -253, -263, -263,    0,    0,    0,    0,
+    0,    0, -191, -184, -176, -164,    0, -164,    0, -181,
+    0, -183,    0, -174,    0, -249, -164,    0, -247,    0,
   };
   protected static readonly short [] yyRindex = {            0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    1,
     0,   39,    0,   20,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0, -167,    0,    0, -200,    0, -199,
-    0,    0, -213,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0, -198,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0, -251,    0,    0, -173,    0, -172,
+    0,    0, -186,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0, -171,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,   58,   77,    0,    0,    0,    0,
-    0,    0,    0,    0,    0, -197,    0,    0,    0,    0,
-    0,    0, -194, -229,    0,    0,
+    0,    0,    0,    0, -170, -163,    0,    0,    0,    0,
+    0, -186,    0, -162,    0,    0, -243,    0,    0,    0,
   };
-  protected static readonly short [] yyGindex = {           35,
-   -6,    8,    0,   -3,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,   13,    0,    0,    0,
+  protected static readonly short [] yyGindex = {           54,
+   -1,  -28,    0,   -3,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,  -30,    0,    0,    0,    0,
   };
-  protected static readonly short [] yyTable = {            26,
-   41,   23,   32,   28,   68,   30,    2,    3,    4,   69,
-   36,   37,   38,   39,   40,   41,   33,    5,   42,    7,
-    6,    7,    8,    9,   45,   24,   53,   34,   35,   25,
-   47,   46,   57,   58,   59,   60,   61,   62,    3,   68,
-   44,   55,   56,   48,   76,   44,   49,   50,    2,    3,
-    4,   51,   63,   64,   65,   74,   44,    5,   67,    5,
-   70,   72,    6,    7,    8,    9,   52,   53,    2,    3,
-    4,   10,   71,   73,   35,   38,    6,   36,   31,    5,
-   29,   66,    6,    7,    8,    9,   75,    0,    0,    0,
-    0,   10,   41,   41,   41,   41,   41,   41,   41,   41,
-    0,   41,    0,    0,    0,    0,    0,   27,    0,    0,
+  protected static readonly short [] yyTable = {            11,
+   43,   23,   34,   35,   26,   55,   56,   32,   43,   43,
+   43,   43,   43,   43,   43,   43,   68,   43,   28,    7,
+   68,   69,   68,   27,   30,   78,   46,   80,    2,    3,
+    4,   46,   57,   58,   59,   60,   61,   62,    3,    5,
+   33,   76,    6,    7,    8,    9,   79,   24,   42,   45,
+   46,   25,   47,   48,    2,    3,    4,    5,   36,   37,
+   38,   39,   40,   41,   11,    5,   73,   50,    6,    7,
+    8,    9,   52,    2,    3,    4,    6,   10,   49,   51,
+   63,   64,   65,   46,    5,   67,   70,    6,    7,    8,
+    9,   75,    2,    3,    4,   71,   10,   72,   74,   77,
+   66,   37,   40,    5,   28,   33,    6,    7,    8,    9,
+    0,   38,   31,    0,    0,   10,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -617,11 +630,10 @@ case 47:
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,   41,   41,   41,
-   41,   41,   41,   41,   41,   41,   41,   41,   41,   41,
-   41,   41,   41,   41,    0,   41,    7,    7,    7,    0,
-   41,    0,    0,    0,    0,    7,    7,    7,    7,    7,
+    0,    0,    0,    0,    0,    0,    0,   43,   43,   43,
+   43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+   43,   43,   43,   43,    0,   43,    7,    7,    7,    0,
+   43,    0,    0,    0,    0,    7,    7,    7,    7,    7,
     7,    7,    7,    7,    7,    3,    3,    3,    0,    7,
     0,    0,    0,    0,    0,    0,    3,    3,    3,    3,
     3,    3,    3,    3,    5,    5,    5,    0,    3,    0,
@@ -630,19 +642,19 @@ case 47:
     0,    0,    0,    0,    6,    6,    6,    6,    6,    6,
     6,    6,    0,    0,    0,    0,    6,
   };
-  protected static readonly short [] yyCheck = {             6,
-    0,    5,    9,  280,  270,  280,  257,  258,  259,  275,
-  260,  261,  262,  263,  264,  265,  274,  268,  280,    0,
-  271,  272,  273,  274,  269,  276,   33,  266,  267,  280,
-  279,  275,   36,   37,   38,   39,   40,   41,    0,  270,
-  270,   34,   35,  275,  275,  275,  269,  275,  257,  258,
-  259,  275,  277,  269,  280,  274,  270,    0,  280,  268,
-  278,   68,  271,  272,  273,  274,  275,   74,  257,  258,
-  259,  280,  280,  280,  275,  275,    0,  275,  277,  268,
-  275,   47,  271,  272,  273,  274,   74,   -1,   -1,   -1,
-   -1,  280,  260,  261,  262,  263,  264,  265,  266,  267,
-   -1,  269,   -1,   -1,   -1,   -1,   -1,  275,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+  protected static readonly short [] yyCheck = {             1,
+    0,    5,  266,  267,    6,   34,   35,    9,  260,  261,
+  262,  263,  264,  265,  266,  267,  270,  269,  280,    0,
+  270,  275,  270,  275,  280,  275,  270,  275,  257,  258,
+  259,  275,   36,   37,   38,   39,   40,   41,    0,  268,
+  274,   72,  271,  272,  273,  274,   77,  276,  280,  269,
+  275,  280,  279,  275,  257,  258,  259,    0,  260,  261,
+  262,  263,  264,  265,   66,  268,   68,  275,  271,  272,
+  273,  274,  275,  257,  258,  259,    0,  280,  269,  275,
+  277,  269,  280,  270,  268,  280,  278,  271,  272,  273,
+  274,  275,  257,  258,  259,  280,  280,  274,  280,  274,
+   47,  275,  275,  268,  275,  277,  271,  272,  273,  274,
+   -1,  275,  275,   -1,   -1,  280,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
@@ -669,7 +681,8 @@ case 47:
   274,  275,   -1,   -1,   -1,   -1,  280,
   };
 
-#line 263 "ExpressionParser.jay"
+#line 266 "ExpressionParser.jay"
+
 
 	}
 #line default
