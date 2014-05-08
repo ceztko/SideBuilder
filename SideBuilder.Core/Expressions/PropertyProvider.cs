@@ -63,9 +63,9 @@ namespace Microsoft.Build.Expressions.Internal
         }
     }
 
-    internal class ProjectPropertyImpl : PropertyProvider
+    internal class PropertyProviderImpl : PropertyProvider
     {
-        public ProjectPropertyImpl(string name, string unevaluatedValue, string evaluatedValue)
+        public PropertyProviderImpl(string name, string unevaluatedValue, string evaluatedValue)
         {
             Name = name;
             UnevaluatedValue = unevaluatedValue;

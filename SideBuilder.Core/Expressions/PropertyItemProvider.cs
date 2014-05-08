@@ -86,11 +86,26 @@ namespace Microsoft.Build.Expressions.Internal
 
     internal class PropertyItemProviderImpl : PropertyItemProvider
     {
-        private Dictionary<string, ProjectPropertyImpl> _properties;
+        private Dictionary<string, PropertyProviderImpl> _properties;
 
         public PropertyItemProviderImpl()
         {
-            _properties = new Dictionary<string, ProjectPropertyImpl>();
+            _properties = new Dictionary<string, PropertyProviderImpl>();
+        }
+
+        public void AddProperty(PropertyProviderImpl property)
+        {
+            _properties.Add(property.Name, property);
+        }
+
+        public void SetProperty(PropertyProviderImpl property)
+        {
+            _properties[property.Name] = property;
+        }
+
+        public void RemoveProperty(string name)
+        {
+            _properties.Remove(name);
         }
 
         public IEnumerable<ItemProvider> GetItems(string name)
