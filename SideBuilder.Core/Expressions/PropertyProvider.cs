@@ -65,11 +65,10 @@ namespace Microsoft.Build.Expressions.Internal
 
     internal class PropertyProviderImpl : PropertyProvider
     {
-        public PropertyProviderImpl(string name, string unevaluatedValue, string evaluatedValue)
+        public PropertyProviderImpl(string name, string unevaluatedValue)
         {
             Name = name;
             UnevaluatedValue = unevaluatedValue;
-            EvaluatedValue = evaluatedValue;
         }
 
         public string Name
@@ -81,13 +80,13 @@ namespace Microsoft.Build.Expressions.Internal
         public string EvaluatedValue
         {
             get;
-            private set;
+            internal set;
         }
 
         public string UnevaluatedValue
         {
             get;
-            private set;
+            internal set;
         }
     }
 }

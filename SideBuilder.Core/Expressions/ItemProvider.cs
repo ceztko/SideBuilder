@@ -62,15 +62,34 @@ namespace Microsoft.Build.Expressions.Internal
 
     internal class ItemProviderImpl : ItemProvider
     {
-        public string EvaluatedInclude
+        private Dictionary<string, string> _Metadata;
+
+        public ItemProviderImpl(string evaluatedInclude)
+        {
+            EvaluatedInclude = evaluatedInclude;
+            _Metadata = new Dictionary<string, string>();
+        }
+
+        public string ItemType
         {
             get;
             set;
         }
 
+        public string EvaluatedInclude
+        {
+            get;
+            private set;
+        }
+
         public string GetMetadataValue(string name)
         {
-            throw new NotImplementedException();
+            string ret;
+            bool found = _Metadata.TryGetValue(name, out ret);
+            if (!found)
+                return null;
+
+            return null;
         }
     }
 }
