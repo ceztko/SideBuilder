@@ -39,56 +39,62 @@ namespace Microsoft.Build.Expressions.Internal
 	
 	partial class ExpressionList : ILocation, IEnumerable<Expression>
 	{
-		public ExpressionList ()
-		{
-		}
+        public ExpressionList()
+        {
+        }
 		
 		public ExpressionList (Expression entry)
 		{
 			Add (entry);
 		}
-		
-		public int Count {
-			get { return list.Count; }
-		}
+
+        public int Count
+        {
+            get { return list.Count; }
+        }
 		
 		//public int Line {
 		//	get { return list.Count == 0 ? 0 : list [0].Line; }
 		//}
-		public int Column {
-			get { return list.Count == 0 ? 0 : list [0].Column; }
-		}
-		public string File {
-			get { return list.Count == 0 ? null : list [0].File; }
-		}
-		public string ToLocationString ()
-		{
-			return list.Count == 0 ? null : list [0].Location.ToLocationString ();
-		}
-			
-		public IEnumerator<Expression> GetEnumerator ()
-		{
-			return list.GetEnumerator ();
-		}
-		
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return list.GetEnumerator ();
-		}
-		
-		List<Expression> list = new List<Expression> ();
-		
-		public ExpressionList Add (Expression expr)
-		{
-			list.Add (expr);
-			return this;
-		}
-		
-		public ExpressionList Insert (int pos, Expression expr)
-		{
-			list.Insert (pos, expr);
-			return this;
-		}
+
+        public int Column
+        {
+            get { return list.Count == 0 ? 0 : list[0].Column; }
+        }
+
+        public string File
+        {
+            get { return list.Count == 0 ? null : list[0].File; }
+        }
+
+        public string ToLocationString()
+        {
+            return list.Count == 0 ? null : list[0].Location.ToLocationString();
+        }
+
+        public IEnumerator<Expression> GetEnumerator()
+        {
+            return list.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return list.GetEnumerator();
+        }
+
+        private List<Expression> list = new List<Expression>();
+
+        public ExpressionList Add(Expression expr)
+        {
+            list.Add(expr);
+            return this;
+        }
+
+        public ExpressionList Insert(int pos, Expression expr)
+        {
+            list.Insert(pos, expr);
+            return this;
+        }
 	}
 
 	abstract partial class Expression : Locatable, ILocation
@@ -96,12 +102,16 @@ namespace Microsoft.Build.Expressions.Internal
 		//public int Line {
 		//	get { return Location.Line; }
 		//}
-		public int Column {
-			get { return Location.Column; }
-		}
-		public string File {
-			get { return Location.File; }
-		}
+        public int Column
+        {
+            get { return Location.Column; }
+        }
+
+        public string File
+        {
+            get { return Location.File; }
+        }
+
 		public string ToLocationString ()
 		{
 			return Location.ToLocationString ();
