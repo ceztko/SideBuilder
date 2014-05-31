@@ -20,11 +20,11 @@ namespace Microsoft.Build.Expressions.Internal
         string GetMetadataValue(string name);
     }
 
-    internal class ProjectItemProvider : ItemProvider
+    internal class MSBuildItemWrapper : ItemProvider
     {
         private ProjectItem _item;
 
-        public ProjectItemProvider(ProjectItem item)
+        public MSBuildItemWrapper(ProjectItem item)
         {
             _item = item;
         }
@@ -40,11 +40,11 @@ namespace Microsoft.Build.Expressions.Internal
         }
     }
 
-    internal class ProjectItemInstanceProvider : ItemProvider
+    internal class MSBuildItemInstanceWrapper : ItemProvider
     {
         private ProjectItemInstance _item;
 
-        public ProjectItemInstanceProvider(ProjectItemInstance item)
+        public MSBuildItemInstanceWrapper(ProjectItemInstance item)
         {
             _item = item;
         }
@@ -60,11 +60,11 @@ namespace Microsoft.Build.Expressions.Internal
         }
     }
 
-    internal class ItemProviderImpl : ItemProvider
+    internal class ItemCollection : ItemProvider
     {
         private Dictionary<string, string> _Metadata;
 
-        public ItemProviderImpl(string evaluatedInclude)
+        public ItemCollection(string evaluatedInclude)
         {
             EvaluatedInclude = evaluatedInclude;
             _Metadata = new Dictionary<string, string>();

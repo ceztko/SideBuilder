@@ -23,11 +23,11 @@ namespace Microsoft.Build.Expressions.Internal
         }
     }
 
-    internal class ProjectPropertyProvider : PropertyProvider
+    internal class MSBuildPropertyWrapper : PropertyProvider
     {
         private ProjectProperty _property;
 
-        public ProjectPropertyProvider(ProjectProperty property)
+        public MSBuildPropertyWrapper(ProjectProperty property)
         {
             _property = property;
         }
@@ -43,11 +43,11 @@ namespace Microsoft.Build.Expressions.Internal
         }
     }
 
-    internal class ProjectPropertyInstanceProvider : PropertyProvider
+    internal class MSBuildPropertyInstanceWrapper : PropertyProvider
     {
         private ProjectPropertyInstance _property;
 
-        public ProjectPropertyInstanceProvider(ProjectPropertyInstance property)
+        public MSBuildPropertyInstanceWrapper(ProjectPropertyInstance property)
         {
             _property = property;
         }
@@ -63,9 +63,9 @@ namespace Microsoft.Build.Expressions.Internal
         }
     }
 
-    internal class PropertyProviderImpl : PropertyProvider
+    internal class PropertyCollection : PropertyProvider
     {
-        public PropertyProviderImpl(string name, string unevaluatedValue)
+        public PropertyCollection(string name, string unevaluatedValue)
         {
             Name = name;
             UnevaluatedValue = unevaluatedValue;

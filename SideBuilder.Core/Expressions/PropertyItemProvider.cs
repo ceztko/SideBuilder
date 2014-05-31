@@ -22,11 +22,11 @@ namespace Microsoft.Build.Expressions.Internal
         PropertyProvider GetProperty(string name);
     }
 
-    internal class ProjectProvider : PropertyItemProvider
+    internal class MSBuildProjectWrapper : PropertyItemProvider
     {
         private Project _project;
 
-        public ProjectProvider(Project project)
+        public MSBuildProjectWrapper(Project project)
         {
             _project = project;
         }
@@ -34,7 +34,7 @@ namespace Microsoft.Build.Expressions.Internal
         public IEnumerable<ItemProvider> GetItems(string itemType)
         {
             foreach (ProjectItem item in _project.GetItems(itemType))
-                yield return new ProjectItemProvider(item);
+                yield return new MSBuildItemWrapper(item);
         }
 
         public IEnumerable<ItemProvider> AllItems
@@ -42,22 +42,22 @@ namespace Microsoft.Build.Expressions.Internal
             get
             {
                 foreach (ProjectItem item in _project.AllEvaluatedItems)
-                    yield return new ProjectItemProvider(item);
+                    yield return new MSBuildItemWrapper(item);
             }
         }
 
         public PropertyProvider GetProperty(string name)
         {
             ProjectProperty obj = _project.GetProperty(name);
-            return obj == null ? null : new ProjectPropertyProvider(_project.GetProperty(name));
+            return obj == null ? null : new MSBuildPropertyWrapper(_project.GetProperty(name));
         }
     }
 
-    internal class ProjectInstanceProvider : PropertyItemProvider
+    internal class MSBuildProjectInstanceWrapper : PropertyItemProvider
     {
         private ProjectInstance _project;
 
-        public ProjectInstanceProvider(ProjectInstance project)
+        public MSBuildProjectInstanceWrapper(ProjectInstance project)
         {
             _project = project;
         }
@@ -65,7 +65,7 @@ namespace Microsoft.Build.Expressions.Internal
         public IEnumerable<ItemProvider> GetItems(string itemType)
         {
             foreach (ProjectItemInstance item in _project.GetItems(itemType))
-                yield return new ProjectItemInstanceProvider(item);
+                yield return new MSBuildItemInstanceWrapper(item);
         }
 
         public IEnumerable<ItemProvider> AllItems
@@ -73,52 +73,52 @@ namespace Microsoft.Build.Expressions.Internal
             get
             {
                 foreach (ProjectItemInstance item in _project.Items)
-                    yield return new ProjectItemInstanceProvider(item);
+                    yield return new MSBuildItemInstanceWrapper(item);
             }
         }
 
         public PropertyProvider GetProperty(string name)
         {
             ProjectPropertyInstance obj = _project.GetProperty(name);
-            return obj == null ? null : new ProjectPropertyInstanceProvider(_project.GetProperty(name));
+            return obj == null ? null : new MSBuildPropertyInstanceWrapper(_project.GetProperty(name));
         }
     }
 
-    internal class PropertyItemProviderImpl : PropertyItemProvider
+    internal class PropertyItemCollection : PropertyItemProvider
     {
-        private Dictionary<string, List<ItemProviderImpl>> _items;
-        private Dictionary<string, PropertyProviderImpl> _properties;
+        private Dictionary<string, List<ItemProvider>> _items;
+        private Dictionary<string, PropertyCollection> _properties;
 
-        public PropertyItemProviderImpl()
+        public PropertyItemCollection()
         {
-            _properties = new Dictionary<string, PropertyProviderImpl>();
-            _items = new Dictionary<string, List<ItemProviderImpl>>();
+            _properties = new Dictionary<string, PropertyCollection>();
+            _items = new Dictionary<string, List<ItemProvider>>();
         }
 
-        public PropertyProviderImpl SetProperty(string name, string unevaluatedValue)
+        public PropertyCollection SetProperty(string name, string unevaluatedValue)
         {
-            PropertyProviderImpl ret;
+            PropertyCollection ret;
             bool found = _properties.TryGetValue(name, out ret);
             if (!found)
-                ret = new PropertyProviderImpl(name, unevaluatedValue);
+                ret = new PropertyCollection(name, unevaluatedValue);
 
             ret.UnevaluatedValue = unevaluatedValue;
             return ret;
         }
 
-        public bool RemoveProperty(PropertyProviderImpl property)
+        public bool RemoveProperty(PropertyCollection property)
         {
             return _properties.Remove(property.Name);
         }
 
-        public ItemProviderImpl AddItem(string itemtype, string unevaluatedInclude)
+        public ItemProvider AddItem(string itemtype, string unevaluatedInclude)
         {
-            List<ItemProviderImpl> items;
+            List<ItemProvider> items;
             bool found = _items.TryGetValue(itemtype, out items);
             if (!found)
-                items = new List<ItemProviderImpl>();
+                items = new List<ItemProvider>();
 
-            ItemProviderImpl newitem = new ItemProviderImpl(unevaluatedInclude);
+            ItemCollection newitem = new ItemCollection(unevaluatedInclude);
             newitem.ItemType = itemtype;
             items.Add(newitem);
 
@@ -130,12 +130,12 @@ namespace Microsoft.Build.Expressions.Internal
 
         public IEnumerable<ItemProvider> GetItems(string itemType)
         {
-            List<ItemProviderImpl> items;
+            List<ItemProvider> items;
             bool found = _items.TryGetValue(itemType, out items);
             if (!found)
                 yield break;
 
-            foreach (ItemProviderImpl item in items)
+            foreach (ItemProvider item in items)
                 yield return item;
         }
 
@@ -143,9 +143,9 @@ namespace Microsoft.Build.Expressions.Internal
         {
             get
             {
-                foreach (List<ItemProviderImpl> list in _items.Values)
+                foreach (List<ItemProvider> list in _items.Values)
                 {
-                    foreach (ItemProviderImpl item in list)
+                    foreach (ItemProvider item in list)
                         yield return item;
                 }
             }
@@ -153,7 +153,7 @@ namespace Microsoft.Build.Expressions.Internal
 
         public PropertyProvider GetProperty(string name)
         {
-            PropertyProviderImpl ret;
+            PropertyCollection ret;
             bool found = _properties.TryGetValue(name, out ret);
             if (!found)
                 return null;

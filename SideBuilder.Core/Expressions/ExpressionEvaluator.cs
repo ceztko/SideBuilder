@@ -44,13 +44,13 @@ namespace Microsoft.Build.Expressions.Internal
         public ExpressionEvaluator(Project project, string replacementForMissingPropertyAndItem)
         {
             ReplacementForMissingPropertyAndItem = replacementForMissingPropertyAndItem;
-            Project = new ProjectProvider(project);
+            Project = new MSBuildProjectWrapper(project);
         }
 
         public ExpressionEvaluator(ProjectInstance project, string replacementForMissingPropertyAndItem)
         {
             ReplacementForMissingPropertyAndItem = replacementForMissingPropertyAndItem;
-            Project = new ProjectInstanceProvider(project);
+            Project = new MSBuildProjectInstanceWrapper(project);
         }
 
         public PropertyItemProvider Project { get; private set; }
