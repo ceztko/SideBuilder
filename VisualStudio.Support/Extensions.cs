@@ -56,6 +56,21 @@ namespace VisualStudio.Support
             return (IVsWindowFrame)ret;
         }
 
+        public static IVsTextBuffer GetFileName(this ITextBuffer buffer)
+        {
+            IVsTextBuffer bufferAdapter;
+            buffer.Properties.TryGetProperty(typeof(IVsTextBuffer), out bufferAdapter);
+            if (bufferAdapter == null)
+                return null;
+
+            return bufferAdapter;
+        }
+
+        public static IPersistFileFormat GetPersistFileFormat(this IVsTextBuffer buffer)
+        {
+            return buffer as IPersistFileFormat;
+        }
+
         public static HiearchyItemPair GetHiearchyItemPair(this IVsWindowFrame frame)
         {
             object hiearchy;
