@@ -84,29 +84,29 @@ namespace Microsoft.Build.Expressions.Internal
         }
     }
 
-    internal class PropertyItemCollection : PropertyItemProvider
+    internal class PropertyItemProviderImpl : PropertyItemProvider
     {
         private Dictionary<string, List<ItemProvider>> _items;
-        private Dictionary<string, PropertyCollection> _properties;
+        private Dictionary<string, PropertyProviderImpl> _properties;
 
-        public PropertyItemCollection()
+        public PropertyItemProviderImpl()
         {
-            _properties = new Dictionary<string, PropertyCollection>();
+            _properties = new Dictionary<string, PropertyProviderImpl>();
             _items = new Dictionary<string, List<ItemProvider>>();
         }
 
-        public PropertyCollection SetProperty(string name, string unevaluatedValue)
+        public PropertyProviderImpl SetProperty(string name, string unevaluatedValue)
         {
-            PropertyCollection ret;
+            PropertyProviderImpl ret;
             bool found = _properties.TryGetValue(name, out ret);
             if (!found)
-                ret = new PropertyCollection(name, unevaluatedValue);
+                ret = new PropertyProviderImpl(name, unevaluatedValue);
 
             ret.UnevaluatedValue = unevaluatedValue;
             return ret;
         }
 
-        public bool RemoveProperty(PropertyCollection property)
+        public bool RemoveProperty(PropertyProviderImpl property)
         {
             return _properties.Remove(property.Name);
         }
@@ -118,7 +118,7 @@ namespace Microsoft.Build.Expressions.Internal
             if (!found)
                 items = new List<ItemProvider>();
 
-            ItemCollection newitem = new ItemCollection(unevaluatedInclude);
+            ItemProviderImpl newitem = new ItemProviderImpl(unevaluatedInclude);
             newitem.ItemType = itemtype;
             items.Add(newitem);
 
@@ -153,7 +153,7 @@ namespace Microsoft.Build.Expressions.Internal
 
         public PropertyProvider GetProperty(string name)
         {
-            PropertyCollection ret;
+            PropertyProviderImpl ret;
             bool found = _properties.TryGetValue(name, out ret);
             if (!found)
                 return null;

@@ -60,11 +60,11 @@ namespace Microsoft.Build.Expressions.Internal
         }
     }
 
-    internal class ItemCollection : ItemProvider
+    internal class ItemProviderImpl : ItemProvider
     {
         private Dictionary<string, string> _Metadata;
 
-        public ItemCollection(string evaluatedInclude)
+        public ItemProviderImpl(string evaluatedInclude)
         {
             EvaluatedInclude = evaluatedInclude;
             _Metadata = new Dictionary<string, string>();

@@ -63,9 +63,9 @@ namespace Microsoft.Build.Expressions.Internal
         }
     }
 
-    internal class PropertyCollection : PropertyProvider
+    internal class PropertyProviderImpl : PropertyProvider
     {
-        public PropertyCollection(string name, string unevaluatedValue)
+        public PropertyProviderImpl(string name, string unevaluatedValue)
         {
             Name = name;
             UnevaluatedValue = unevaluatedValue;
