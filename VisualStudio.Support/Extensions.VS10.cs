@@ -17,6 +17,7 @@ namespace VisualStudio.Support
     extern alias VC;
     using VCProjectShim = VC::Microsoft.VisualStudio.Project.VisualC.VCProjectEngine.VCProjectShim;
     using VCConfigurationShim = VC::Microsoft.VisualStudio.Project.VisualC.VCProjectEngine.VCConfigurationShim;
+using Microsoft.VisualStudio.Shell.Interop;
 
 
     public static partial class Extensions
@@ -39,6 +40,11 @@ namespace VisualStudio.Support
                 return textDocument;
             else
                 return null;
+        }
+
+        public IVsProject GetVsProject(this IVsHierarchy pHierarchy)
+        {
+            return pHierarchy as IVsProject;
         }
 
         public static ConfiguredProject GetConfiguredProject(this VCProject project)

@@ -12,11 +12,21 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.OLE.Interop;
+using System.Runtime.InteropServices;
 
 namespace VisualStudio.Support
 {
     public static partial class Extensions
     {
+        public static void AddCommandFilter(this IVsTextView textView, OleCommandTarget filter)
+        {
+            IOleCommandTarget next;
+            int hr = textView.AddCommandFilter(filter, out next);
+            Marshal.ThrowExceptionForHR(hr);
+            filter.Next = next;
+        }
+
         public static Guid GetProjectGuid(this IVsHierarchy project)
         {
             Guid ret;
@@ -25,9 +35,19 @@ namespace VisualStudio.Support
             return ret;
         }
 
+        public static IVsSccProject2 GetSccProject(this IVsHierarchy pHierarchy)
+        {
+            return pHierarchy as IVsSccProject2;
+        }
+
         public static IVsHierarchy GetHierarchy(this IVsSolution solution)
         {
             return solution as IVsHierarchy;
+        }
+
+        public static IVsCfgProvider2 GetCfgProvider(this IVsSolution solution)
+        {
+            return solution as IVsCfgProvider2;
         }
 
         public static IVsBuildMacroInfo GetBuildMacroInfo(this IVsProject project)
@@ -40,7 +60,7 @@ namespace VisualStudio.Support
             return project as IVsBuildPropertyStorage;
         }
 
-        public static IVsHierarchy GetProjectHierarchy(IVsSolution solution, Project project)
+        public static IVsHierarchy GetProjectHierarchy(this Project project, IVsSolution solution)
         {
             IVsHierarchy hierarchy;
             solution.GetProjectOfUniqueName(project.FullName, out hierarchy);

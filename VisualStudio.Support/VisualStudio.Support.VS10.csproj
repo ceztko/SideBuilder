@@ -186,7 +186,10 @@
     <Compile Include="DTEWrapper.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Extensions.VS10.cs" />
+    <Compile Include="Interfaces.cs" />
     <Compile Include="MessageFilter.cs" />
+    <Compile Include="OleCommandTarget.cs" />
+    <Compile Include="PackageEx.cs" />
     <Compile Include="TemplateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
