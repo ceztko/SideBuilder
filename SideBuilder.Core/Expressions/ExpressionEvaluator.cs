@@ -41,6 +41,12 @@ namespace Microsoft.Build.Expressions.Internal
 {
 	class ExpressionEvaluator
 	{
+        public ExpressionEvaluator(PropertyItemProvider provider, string replacementForMissingPropertyAndItem)
+        {
+            ReplacementForMissingPropertyAndItem = replacementForMissingPropertyAndItem;
+            Project = provider;
+        }
+
         public ExpressionEvaluator(Project project, string replacementForMissingPropertyAndItem)
         {
             ReplacementForMissingPropertyAndItem = replacementForMissingPropertyAndItem;

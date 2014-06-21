@@ -9,33 +9,46 @@ using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using System.IO;
 using Microsoft.Build.Expressions.Internal;
+using Microsoft.Build.Execution;
 
 namespace SideBuilder.Core
 {
     public static class Extensions
     {
-        public static IEnumerable<ProjectElement> Iterate(this Project project)
+        public static IEnumerable<ProjectElement> Iterate(this ProjectRootElement xml, Project project)
         {
             HashSet<string> visitedImports = new HashSet<string>();
-            return Iterate(project.Xml, project, visitedImports);
+            return Iterate(xml, new MSBuildProjectWrapper(project), visitedImports);
+        }
+
+        public static IEnumerable<ProjectElement> Iterate(this ProjectRootElement xml, ProjectInstance project)
+        {
+            HashSet<string> visitedImports = new HashSet<string>();
+            return Iterate(xml, new MSBuildProjectInstanceWrapper(project), visitedImports);
+        }
+
+        internal static IEnumerable<ProjectElement> Iterate(this ProjectRootElement xml, PropertyItemProvider provider)
+        {
+            HashSet<string> visitedImports = new HashSet<string>();
+            return Iterate(xml, provider, visitedImports);
         }
 
         private static IEnumerable<ProjectElement> Iterate(ProjectRootElement root,
-            Project project, HashSet<string> visitedImports)
+            PropertyItemProvider provider, HashSet<string> visitedImports)
         {
             foreach (ProjectElement element in root.Children)
             {
                 ProjectImportGroupElement group = element as ProjectImportGroupElement;
                 if (group != null)
                 {
-                    foreach (ProjectElement element2 in Iterate(group, project, visitedImports))
+                    foreach (ProjectElement element2 in Iterate(group, provider, visitedImports))
                         yield return element2;
                 }
 
                 ProjectImportElement import = element as ProjectImportElement;
                 if (import != null)
                 {
-                    foreach (ProjectElement element2 in Iterate(import, project, visitedImports))
+                    foreach (ProjectElement element2 in Iterate(import, provider, visitedImports))
                         yield return element2;
                 }
 
@@ -44,14 +57,14 @@ namespace SideBuilder.Core
         }
 
         private static IEnumerable<ProjectElement> Iterate(ProjectImportGroupElement group,
-            Project project, HashSet<string> visitedImports)
+            PropertyItemProvider provider, HashSet<string> visitedImports)
         {
             foreach (ProjectElement element in group.Children)
             {
                 ProjectImportElement import = element as ProjectImportElement;
                 if (import != null)
                 {
-                    foreach (ProjectElement element2 in Iterate(import, project, visitedImports))
+                    foreach (ProjectElement element2 in Iterate(import, provider, visitedImports))
                         yield return element2;
                 }
                 else
@@ -61,9 +74,9 @@ namespace SideBuilder.Core
         }
 
         private static IEnumerable<ProjectElement> Iterate(ProjectImportElement import,
-            Project project, HashSet<string> visitedImports)
+            PropertyItemProvider provider, HashSet<string> visitedImports)
         {
-            string path = new ExpressionEvaluator(project, null).Evaluate(import.Project);
+            string path = new ExpressionEvaluator(provider, null).Evaluate(import.Project);
             string basepath = Path.GetDirectoryName(import.Location.File);
             string[] paths = PathUtils.ExpandPath(basepath, path);
             Array.Sort(paths, StringComparer.InvariantCulture);
@@ -76,13 +89,13 @@ namespace SideBuilder.Core
                 ProjectRootElement importRoot = null;
                 try
                 {
-                    importRoot = ProjectRootElement.Open(filepath, project.ProjectCollection);
+                    importRoot = ProjectRootElement.Open(filepath);
                 }
                 catch (Exception)
                 {
                     continue;
                 }
-                foreach (ProjectElement element2 in Iterate(importRoot, project, visitedImports))
+                foreach (ProjectElement element2 in Iterate(importRoot, provider, visitedImports))
                     yield return element2;
             }
         }
@@ -90,11 +103,19 @@ namespace SideBuilder.Core
         public static void Test(Project project)
         {
             string test = "!$([System.String]::IsNullOrEmpty('$(TargetFrameworkVersion)'))";
+
             bool test3 = new ExpressionEvaluator(project, null).EvaluateAsBoolean(test);
+            test = "$(TargetFrameworkVersion) == $(TargetFramork) and $(TargetFrameworkVersion) == '4.0'";
+            bool success;
+            bool? result = new ExpressionEvaluator(project, null).EvaluateAsBoolean(test, out success);
+
+
             ExpressionList exp2 = new ExpressionParser().Parse("Exists('$(MSBuildToolsPath)\\Microsoft.WorkflowBuildExtensions.targets')", ExpressionValidationType.StrictBoolean);
             ExpressionList exp = new ExpressionParser().Parse(test, ExpressionValidationType.StrictBoolean);
             List<ExpressionList> list = new List<ExpressionList>();
-            foreach (ProjectElement element in project.Iterate())
+
+
+            foreach (ProjectElement element in project.Xml.Iterate(project))
             {
                 if (!String.IsNullOrEmpty(element.Condition))
                 {
