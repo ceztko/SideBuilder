@@ -21,6 +21,7 @@ using BuildProject = Microsoft.Build.Evaluation.Project;
 using DTEProject = EnvDTE.Project;
 using System.IO;
 using Microsoft.VisualStudio.VCProjectEngine;
+using VisualStudio.Support;
 
 namespace SideBuilder
 {
@@ -29,7 +30,7 @@ namespace SideBuilder
     [Guid(GuidList.guidSolutionConfigurationNamePkgString)]
     //[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)] // Load if solution exists
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string)]       // Load if no solution
-    public sealed partial class MainSite : Package
+    public sealed partial class MainSite : PackageEx
     {
         private static DTE2 _DTE2;
         private static UpdateSolutionEvents _UpdateSolutionEvents;
@@ -40,38 +41,22 @@ namespace SideBuilder
         protected override void Initialize()
         {
             base.Initialize();
-            IVsExtensibility extensibility = GetService<IVsExtensibility>();
-            _DTE2 = (DTE2)extensibility.GetGlobalsObject(null).DTE;
 
-            IVsSolution solution = GetService<SVsSolution>() as IVsSolution;
-            IVsCfgProvider2 test = solution as IVsCfgProvider2;
+            _DTE2 = GetDTE2();
+
+            IVsSolution solution = GetVsSolution();
             _SolutionEvents = new SolutionEvents();
             int hr;
             uint pdwCookie;
             hr = solution.AdviseSolutionEvents(_SolutionEvents, out pdwCookie);
             Marshal.ThrowExceptionForHR(hr);
 
-            IVsSolutionBuildManager3 vsSolutionBuildManager = (IVsSolutionBuildManager3)GetService<SVsSolutionBuildManager>();
+            IVsSolutionBuildManager3 vsSolutionBuildManager = GetVsSolutionBuildManager();
             _UpdateSolutionEvents = new UpdateSolutionEvents();
             hr = vsSolutionBuildManager.AdviseUpdateSolutionEvents3(_UpdateSolutionEvents, out pdwCookie);
             Marshal.ThrowExceptionForHR(hr);
 
             foo();
-        }
-
-        private void GetService<T>(out T service)
-        {
-            service = (T)GetService(typeof(T));
-        }
-
-        private T GetService<T>()
-        {
-            return (T)GetService(typeof(T));
-        }
-
-        public static DTE2 DTE2
-        {
-            get { return _DTE2; }
         }
     }
 }

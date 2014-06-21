@@ -20,6 +20,7 @@ using System.Reflection;
 using NUnit.Core;
 using NUnit.Util;
 using System.IO;
+using VisualStudio.Support;
 
 namespace VisualStudio.Probe
 {
@@ -28,7 +29,7 @@ namespace VisualStudio.Probe
     [Guid(GuidList.VSPackageGuidString)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string)]       // Load if no solution
     [ProvideBindingPath]
-    public sealed partial class MainSite : Package
+    public sealed partial class MainSite : PackageEx
     {
         private static MainSite _Instance;
         private DTE2 _DTE2;
@@ -43,8 +44,7 @@ namespace VisualStudio.Probe
         protected override void Initialize()
         {
             base.Initialize();
-            IVsExtensibility extensibility = GetService<IVsExtensibility>();
-            _DTE2 = (DTE2)extensibility.GetGlobalsObject(null).DTE;
+            _DTE2 = GetDTE2();
             _DTEEvents = _DTE2.Events.DTEEvents;
             _DTEEvents.OnStartupComplete += new _dispDTEEvents_OnStartupCompleteEventHandler(_DTEEvents_OnStartupComplete);
         }
@@ -74,16 +74,6 @@ namespace VisualStudio.Probe
                 writer.SaveTestResult(testResult);
             }
             _DTE2.Quit();
-        }
-
-        public void GetService<T>(out T service)
-        {
-            service = (T)GetService(typeof(T));
-        }
-
-        public T GetService<T>()
-        {
-            return (T)GetService(typeof(T));
         }
 
         public DTE2 DTE2
