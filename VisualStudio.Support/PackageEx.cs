@@ -63,9 +63,14 @@ namespace VisualStudio.Support
             return GetService<SVsRegisterPriorityCommandTarget>() as IVsRegisterPriorityCommandTarget;
         }
 
-        public IVsExtensibility GetVsExtensibility()
+        public IVsExtensibility3 GetVsExtensibility3()
         {
-            return GetService<IVsExtensibility>() as IVsExtensibility;
+            return GetService<IVsExtensibility>() as IVsExtensibility3;
+        }
+
+        public IVsExtensibility2 GetVsExtensibility2()
+        {
+            return GetService<IVsExtensibility>() as IVsExtensibility2;
         }
 
         public IVsMonitorSelection GetVsMonitorSelection()
@@ -101,6 +106,12 @@ namespace VisualStudio.Support
         public IVsShell GetVsShell()
         {
             return GetService<SVsShell>() as IVsShell;
+        }
+
+        public DTE2 GetDTE2()
+        {
+            IVsExtensibility2 extensibility = GetVsExtensibility2();
+            return extensibility.GetGlobalsObject(null).DTE as DTE2;
         }
     }
 }

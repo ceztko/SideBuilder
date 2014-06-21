@@ -42,7 +42,7 @@ using Microsoft.VisualStudio.Shell.Interop;
                 return null;
         }
 
-        public IVsProject GetVsProject(this IVsHierarchy pHierarchy)
+        public static IVsProject GetVsProject(this IVsHierarchy pHierarchy)
         {
             return pHierarchy as IVsProject;
         }
