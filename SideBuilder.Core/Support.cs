@@ -104,24 +104,54 @@ namespace SideBuilder.Core
         {
             string test = "!$([System.String]::IsNullOrEmpty('$(TargetFrameworkVersion)'))";
 
-            bool test3 = new ExpressionEvaluator(project, null).EvaluateAsBoolean(test);
+            bool test3 = new ExpressionEvaluator(project).EvaluateAsBoolean(test);
             test = "$(TargetFrameworkVersion) == $(TargetFramork) and $(TargetFrameworkVersion) == '4.0'";
             bool success;
-            bool? result = new ExpressionEvaluator(project, null).EvaluateAsBoolean(test, out success);
-
+            bool? result = new ExpressionEvaluator(project).EvaluateAsBoolean(test, out success);
 
             ExpressionList exp2 = new ExpressionParser().Parse("Exists('$(MSBuildToolsPath)\\Microsoft.WorkflowBuildExtensions.targets')", ExpressionValidationType.StrictBoolean);
             ExpressionList exp = new ExpressionParser().Parse(test, ExpressionValidationType.StrictBoolean);
             List<ExpressionList> list = new List<ExpressionList>();
 
-
             foreach (ProjectElement element in project.Xml.Iterate(project))
             {
+                foo(element);
+
                 if (!String.IsNullOrEmpty(element.Condition))
                 {
                     ExpressionList exps = new ExpressionParser().Parse(element.Condition, ExpressionValidationType.StrictBoolean);
                     list.Add(exps);
                 }
+            }
+        }
+
+        public static void foo(ProjectElement element)
+        {
+            switch (element.GetElementType())
+            {
+                case ElementType.ItemGroup:
+                {
+                    ProjectItemGroupElement itemGroup = element as ProjectItemGroupElement;
+                    break;
+                }
+                case ElementType.PropertyGroup:
+                {
+                    ProjectPropertyGroupElement propertyGroup = element as ProjectPropertyGroupElement;
+                    break;
+                }
+            }
+        }
+
+        private static ElementType GetElementType(this ProjectElement element)
+        {
+            switch (element.GetType().Name)
+            {
+                case "ProjectItemGroupElement":
+                    return ElementType.ItemGroup;
+                case "ProjectPropertyGroupElement":
+                    return ElementType.PropertyGroup;
+                default:
+                    return ElementType.Unsupported;
             }
         }
     }
@@ -131,5 +161,26 @@ namespace SideBuilder.Core
         Unsupported = 0,
         ClCompile,
         ClInclude
+    }
+
+    public enum KnownItemDefinition
+    {
+        ClCompile
+    }
+
+    public enum KnwownClCompileMetatada
+    {
+        PrecompiledHeader,
+        PrecompiledHeaderFile,
+        WarningLevel,
+        Optimization,
+        PreprocessorDefinitions
+    }
+
+    internal enum ElementType
+    {
+        Unsupported,
+        ItemGroup,
+        PropertyGroup
     }
 }

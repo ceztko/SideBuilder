@@ -45,12 +45,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuildConfigWriter.cs" />
     <Compile Include="BuilderCore.cs" />
     <Compile Include="PathUtils.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support.cs" />
+    <None Include="Expressions\gen\ExpressionParser.jay" />
+    <None Include="Expressions\gen\skeleton.cs" />
     <Compile Include="Expressions\ExpressionConstructs.cs" />
     <Compile Include="Expressions\ExpressionEvaluator.cs" />
     <Compile Include="Expressions\ExpressionParser.cs" />
@@ -62,6 +65,9 @@
     <Compile Include="Expressions\PropertyProvider.cs" />
     <Compile Include="Expressions\PropertyItemProvider.cs" />
     <Compile Include="Expressions\WindowsCompatibilityExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Expressions\gen\Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
