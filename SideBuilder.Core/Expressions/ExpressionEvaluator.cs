@@ -41,19 +41,19 @@ namespace Microsoft.Build.Expressions.Internal
 {
 	class ExpressionEvaluator
 	{
-        public ExpressionEvaluator(PropertyItemProvider provider, string replacementForMissingPropertyAndItem)
+        public ExpressionEvaluator(PropertyItemProvider provider, string replacementForMissingPropertyAndItem = null)
         {
             ReplacementForMissingPropertyAndItem = replacementForMissingPropertyAndItem;
             Project = provider;
         }
 
-        public ExpressionEvaluator(Project project, string replacementForMissingPropertyAndItem)
+        public ExpressionEvaluator(Project project, string replacementForMissingPropertyAndItem = null)
         {
             ReplacementForMissingPropertyAndItem = replacementForMissingPropertyAndItem;
             Project = new MSBuildProjectWrapper(project);
         }
 
-        public ExpressionEvaluator(ProjectInstance project, string replacementForMissingPropertyAndItem)
+        public ExpressionEvaluator(ProjectInstance project, string replacementForMissingPropertyAndItem = null)
         {
             ReplacementForMissingPropertyAndItem = replacementForMissingPropertyAndItem;
             Project = new MSBuildProjectInstanceWrapper(project);
@@ -71,30 +71,41 @@ namespace Microsoft.Build.Expressions.Internal
 
         public string Evaluate(string source)
         {
-            return Evaluate(source, new ExpressionParserManual(source ?? string.Empty, ExpressionValidationType.LaxString).Parse());
+            bool success;
+            return Evaluate(new ExpressionParserManual(source ?? string.Empty, ExpressionValidationType.LaxString).Parse(), EvaluateOptions.EvaluateAll, out success);
         }
 
-        internal string Evaluate(string source, EvaluateOptions options, out bool success)
+        public string Evaluate(string source, out bool success)
         {
-            return Evaluate(source, new ExpressionParserManual(source ?? string.Empty, ExpressionValidationType.LaxString).Parse(), options, out success);
+            return Evaluate(new ExpressionParserManual(source ?? string.Empty, ExpressionValidationType.LaxString).Parse(), EvaluateOptions.EvaluateEagerly, out success);
         }
 
-        internal string Evaluate(string source, ExpressionList exprList)
+        public string Evaluate(string source, EvaluateOptions options, out bool success)
+        {
+            return Evaluate(new ExpressionParserManual(source ?? string.Empty, ExpressionValidationType.LaxString).Parse(), options, out success);
+        }
+
+        public string Evaluate(ExpressionList exprlist)
         {
             bool success;
-            return Evaluate(source, exprList, EvaluateOptions.EvaluateAll, out success);
+            return Evaluate(exprlist, EvaluateOptions.EvaluateAll, out success);
         }
 
-        internal string Evaluate(string source, ExpressionList exprList, EvaluateOptions options, out bool success)
+        public string Evaluate(ExpressionList exprlist, out bool success)
+        {
+            return Evaluate(exprlist, EvaluateOptions.EvaluateEagerly, out success);
+        }
+
+        public string Evaluate(ExpressionList exprlist, EvaluateOptions options, out bool success)
 		{
-			if (exprList == null)
+			if (exprlist == null)
 				throw new ArgumentNullException ("exprList");
 
             bool outersucc = true;
-            string outerval = string.Concat(exprList.Select(e =>
+            string outerval = string.Concat(exprlist.Select(e =>
             {
                 bool innersucc;
-                string innerval = e.EvaluateAsString(CreateContext(source), options, out innersucc);
+                string innerval = e.EvaluateAsString(new EvaluationContext(this), options, out innersucc);
                 if (!innersucc)
                     outersucc = false;
 
@@ -104,6 +115,22 @@ namespace Microsoft.Build.Expressions.Internal
             success = outersucc;
             return outerval;
 		}
+
+        public bool EvaluateAsBoolean(Expression expression)
+        {
+            bool success;
+            return EvaluateAsBoolean(expression, EvaluateOptions.EvaluateAll, out success).Value;
+        }
+
+        public bool? EvaluateAsBoolean(Expression expression, out bool success)
+        {
+            return EvaluateAsBoolean(expression, EvaluateOptions.EvaluateEagerly, out success);
+        }
+
+        public bool? EvaluateAsBoolean(Expression expression, EvaluateOptions options, out bool success)
+        {
+            return expression.EvaluateAsBoolean(new EvaluationContext(this), options, out success);
+        }
 
         public bool EvaluateAsBoolean(string source)
         {
@@ -118,38 +145,30 @@ namespace Microsoft.Build.Expressions.Internal
 
         private bool? EvaluateAsBoolean(string source, EvaluateOptions options, out bool success)
         {
-            ExpressionList el = null;
+            ExpressionList exprlist = null;
 
             try
             {
-                el = new ExpressionParser().Parse(source, ExpressionValidationType.StrictBoolean);
+                exprlist = new ExpressionParser().Parse(source, ExpressionValidationType.StrictBoolean);
             }
             catch (yyParser.yyException ex)
             {
                 throw new InvalidProjectFileException(string.Format("failed to evaluate expression as boolean: '{0}': {1}", source, ex.Message), ex);
             }
 
-            if (el.Count != 1)
-                throw new InvalidProjectFileException("Unexpected number of tokens: " + el.Count);
+            if (exprlist.Count != 1)
+                throw new InvalidProjectFileException("Unexpected number of tokens: " + exprlist.Count);
 
-            return el.First().EvaluateAsBoolean(CreateContext(source), options, out success);
-        }
-
-        private EvaluationContext CreateContext(string source)
-        {
-            return new EvaluationContext(source, this);
+            return exprlist.First().EvaluateAsBoolean(new EvaluationContext(this), options, out success);
         }
 	}
 	
 	class EvaluationContext
 	{
-		public EvaluationContext(string source, ExpressionEvaluator evaluator)
+		public EvaluationContext(ExpressionEvaluator evaluator)
 		{
-			Source = source;
 			Evaluator = evaluator;
 		}
-
-		public string Source { get; private set; }
 		
 		public ExpressionEvaluator Evaluator { get; private set; }
 		public ItemProvider ContextItem { get; set; }
@@ -248,27 +267,27 @@ namespace Microsoft.Build.Expressions.Internal
             return EvaluateAsObject(context, EvaluateOptions.EvaluateEagerly, out success);
         }
  
-        public bool EvaluateStringAsBoolean(EvaluationContext context, string ret)
+        public bool EvaluateStringAsBoolean(EvaluationContext context, string str)
         {
             bool success;
-            return EvaluateStringAsBoolean(context, ret, EvaluateOptions.None, out success).Value;
+            return EvaluateStringAsBoolean(context, str, EvaluateOptions.None, out success).Value;
         }
 
-        public bool? EvaluateStringAsBoolean(EvaluationContext context, string ret, out bool success)
+        public bool? EvaluateStringAsBoolean(EvaluationContext context, string str, out bool success)
         {
-            return EvaluateStringAsBoolean(context, ret, EvaluateOptions.EvaluateEagerly, out success);
+            return EvaluateStringAsBoolean(context, str, EvaluateOptions.EvaluateEagerly, out success);
         }
 
-        internal bool? EvaluateStringAsBoolean(EvaluationContext context, string ret, EvaluateOptions options, out bool success)
+        internal bool? EvaluateStringAsBoolean(EvaluationContext context, string str, EvaluateOptions options, out bool success)
 		{
-			if (ret != null)
+			if (str != null)
             {
-                if (ret.Equals("TRUE", StringComparison.InvariantCultureIgnoreCase))
+                if (str.Equals("TRUE", StringComparison.InvariantCultureIgnoreCase))
                 {
                     success = true;
                     return true;
                 }
-                else if (ret.Equals("FALSE", StringComparison.InvariantCultureIgnoreCase))
+                else if (str.Equals("FALSE", StringComparison.InvariantCultureIgnoreCase))
                 {
                     success = true;
                     return false;
@@ -277,8 +296,7 @@ namespace Microsoft.Build.Expressions.Internal
 
             if (!options.HasFlag(EvaluateOptions.EvaluateEagerly))
 			    throw new InvalidProjectFileException (this.Location,
-                    string.Format("Condition '{0}' is evaluated as '{1}' and cannot be converted to boolean",
-                        context.Source, ret));
+                    string.Format("Condition evaluated as '{1}' and cannot be converted to boolean", str));
 
             success = false;
             return null;
@@ -736,11 +754,11 @@ namespace Microsoft.Build.Expressions.Internal
 	{
         protected internal override bool? EvaluateAsBoolean(EvaluationContext context, EvaluateOptions options, out bool success)
         {
-            string val = EvaluateAsString(context, options, out success);
+            string str = EvaluateAsString(context, options, out success);
             if (!success)
                 return null;
 
-            return EvaluateStringAsBoolean(context, val, options, out success);
+            return EvaluateStringAsBoolean(context, str, options, out success);
         }
 
         protected internal override string EvaluateAsString(EvaluationContext context, EvaluateOptions options, out bool success)
@@ -824,11 +842,11 @@ namespace Microsoft.Build.Expressions.Internal
 	{
         protected internal override bool? EvaluateAsBoolean(EvaluationContext context, EvaluateOptions options, out bool success)
         {
-            var ret = EvaluateAsString(context, options, out success);
+            var str = EvaluateAsString(context, options, out success);
             if (!success)
                 return null;
             
-            return EvaluateStringAsBoolean(context, ret, options, out success);
+            return EvaluateStringAsBoolean(context, str, options, out success);
         }
 
         protected internal override string EvaluateAsString(EvaluationContext context, EvaluateOptions options, out bool success)
