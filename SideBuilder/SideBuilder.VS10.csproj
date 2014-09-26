@@ -55,11 +55,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\ProjectComponents\Microsoft.VisualStudio.Project.Framework.Implementation.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Project.VisualC.VCProjectEngine, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\ProjectComponents\Microsoft.VisualStudio.Project.VisualC.VCProjectEngine.dll</HintPath>
-      <Aliases>VC</Aliases>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0" />

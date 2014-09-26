@@ -22,13 +22,10 @@ using NStackFrame = System.Diagnostics.StackFrame;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio;
 using System.Runtime.InteropServices;
+using Microsoft.Build.Construction;
 
 namespace VisualStudio.Probe
 {
-    extern alias VC;
-    using VCProjectShim=VC::Microsoft.VisualStudio.Project.VisualC.VCProjectEngine.VCProjectShim;
-    using Microsoft.Build.Construction;
-
     [TestFixture]
     public class ProbeSuite : IVsSolutionEvents3
     {
