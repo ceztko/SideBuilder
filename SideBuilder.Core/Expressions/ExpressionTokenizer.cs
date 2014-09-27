@@ -29,21 +29,21 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Build.Evaluation;
 
-namespace Microsoft.Build.Expressions.Internal
+namespace Microsoft.Build.Expressions
 {
-	enum ExpressionValidationType
+	internal enum ExpressionValidationType
 	{
 		LaxString,
 		StrictBoolean,
 	}
 	
-	enum TokenizerMode
+	internal enum TokenizerMode
 	{
 		Default,
 		InsideItemOrProperty,
 	}
 	
-	class ExpressionTokenizer : yyParser.yyInput
+	internal class ExpressionTokenizer : yyParser.yyInput
 	{
 		public ExpressionTokenizer (string source, ExpressionValidationType validationType)
 		{
@@ -271,7 +271,7 @@ namespace Microsoft.Build.Expressions.Internal
 		}
 	}	
 
-	class NameToken : Location
+	public class NameToken : Location
 	{
 		public string Name { get; set; }
 		
@@ -281,12 +281,12 @@ namespace Microsoft.Build.Expressions.Internal
 		}
 	}
 
-	class ErrorToken : Location
+	public class ErrorToken : Location
 	{
 		public string Message { get; set; }
 	}
 
-	interface ILocation
+	public interface ILocation
 	{
 		//int Line { get; }
 		int Column { get; }
@@ -295,7 +295,7 @@ namespace Microsoft.Build.Expressions.Internal
 		string ToLocationString ();
 	}
 
-	class Location : ILocation
+	public class Location : ILocation
 	{
 		//public int Line { get; set; }
 		public int Column { get; set; }

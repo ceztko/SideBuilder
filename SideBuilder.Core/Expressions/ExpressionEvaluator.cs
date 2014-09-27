@@ -37,9 +37,9 @@ using Microsoft.Build.Framework;
 using System.IO;
 using Microsoft.Build.Internal;
 
-namespace Microsoft.Build.Expressions.Internal
+namespace Microsoft.Build.Expressions
 {
-	class ExpressionEvaluator
+	public class ExpressionEvaluator
 	{
         public ExpressionEvaluator(PropertyItemProvider provider, string replacementForMissingPropertyAndItem = null)
         {
@@ -163,7 +163,7 @@ namespace Microsoft.Build.Expressions.Internal
         }
 	}
 	
-	class EvaluationContext
+	public class EvaluationContext
 	{
 		public EvaluationContext(ExpressionEvaluator evaluator)
 		{
@@ -232,7 +232,7 @@ namespace Microsoft.Build.Expressions.Internal
 		}
 	}
 	
-	abstract partial class Expression
+	public abstract partial class Expression
 	{
         public bool EvaluateAsBoolean(EvaluationContext context)
         {
@@ -309,7 +309,7 @@ namespace Microsoft.Build.Expressions.Internal
         protected internal abstract object EvaluateAsObject(EvaluationContext context, EvaluateOptions options, out bool success);
 	}
 	
-	partial class BinaryExpression : Expression
+	public partial class BinaryExpression : Expression
 	{
         protected internal override bool? EvaluateAsBoolean(EvaluationContext context, EvaluateOptions options, out bool success)
 		{
@@ -538,7 +538,7 @@ namespace Microsoft.Build.Expressions.Internal
 		};
     }
 	
-	partial class BooleanLiteral : Expression
+	public partial class BooleanLiteral : Expression
 	{
         protected internal override string EvaluateAsString(EvaluationContext context, EvaluateOptions options, out bool success)
         {
@@ -559,7 +559,7 @@ namespace Microsoft.Build.Expressions.Internal
         }
     }
 
-	partial class NotExpression : Expression
+	public partial class NotExpression : Expression
 	{
         protected internal override string EvaluateAsString(EvaluationContext context, EvaluateOptions options, out bool success)
         {
@@ -586,7 +586,7 @@ namespace Microsoft.Build.Expressions.Internal
         }
 	}
 
-	partial class PropertyAccessExpression : Expression
+	public partial class PropertyAccessExpression : Expression
 	{
         protected internal override bool? EvaluateAsBoolean(EvaluationContext context, EvaluateOptions options, out bool success)
         {
@@ -750,7 +750,7 @@ namespace Microsoft.Build.Expressions.Internal
 		}
     }
 
-	partial class ItemAccessExpression : Expression
+	public partial class ItemAccessExpression : Expression
 	{
         protected internal override bool? EvaluateAsBoolean(EvaluationContext context, EvaluateOptions options, out bool success)
         {
@@ -805,7 +805,7 @@ namespace Microsoft.Build.Expressions.Internal
 		}
     }
 
-	partial class MetadataAccessExpression : Expression
+	public partial class MetadataAccessExpression : Expression
 	{
         protected internal override bool? EvaluateAsBoolean(EvaluationContext context, EvaluateOptions options, out bool success)
         {
@@ -859,7 +859,8 @@ namespace Microsoft.Build.Expressions.Internal
             return EvaluateAsString(context, options, out success);
 		}
     }
-	partial class RawStringLiteral : Expression
+
+	public partial class RawStringLiteral : Expression
 	{
         protected internal override string EvaluateAsString(EvaluationContext context, EvaluateOptions options, out bool success)
 		{
@@ -882,7 +883,7 @@ namespace Microsoft.Build.Expressions.Internal
 		}
     }
 	
-	partial class FunctionCallExpression : Expression
+	public partial class FunctionCallExpression : Expression
 	{
         protected internal override string EvaluateAsString(EvaluationContext context, EvaluateOptions options, out bool success)
 		{

@@ -8,9 +8,9 @@ using System.Text;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Evaluation;
 
-namespace Microsoft.Build.Expressions.Internal
+namespace Microsoft.Build.Expressions
 {
-    internal interface ItemProvider
+    public interface ItemProvider
     {
         string EvaluatedInclude
         {

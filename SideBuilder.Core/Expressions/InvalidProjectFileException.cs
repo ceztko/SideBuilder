@@ -29,7 +29,7 @@
 using System;
 using System.Runtime.Serialization;
 using Microsoft.Build.Construction;
-using Microsoft.Build.Expressions.Internal;
+using Microsoft.Build.Expressions;
 
 namespace Microsoft.Build.Expressions
 {

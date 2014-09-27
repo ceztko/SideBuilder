@@ -8,9 +8,9 @@ using System.Text;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
 
-namespace Microsoft.Build.Expressions.Internal
+namespace Microsoft.Build.Expressions
 {
-    internal interface PropertyItemProvider
+    public interface PropertyItemProvider
     {
         IEnumerable<ItemProvider> GetItems(string itemType);
 

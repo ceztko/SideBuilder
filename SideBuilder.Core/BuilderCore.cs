@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.Build.Evaluation;
 using System.Globalization;
 using System.IO;
+using MSBuild.Support;
 
 namespace SideBuilder.Core
 {

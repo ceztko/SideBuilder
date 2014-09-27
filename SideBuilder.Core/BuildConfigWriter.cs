@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Build.Expressions.Internal;
+using Microsoft.Build.Expressions;
 using Microsoft.Build.Construction;
 
 namespace SideBuilder.Core
@@ -17,6 +17,11 @@ namespace SideBuilder.Core
         }
 
         public void Write(ProjectItemGroupElement element)
+        {
+
+        }
+
+        private void write(ProjectElement element)
         {
             ExpressionList explist = null;
             if (!String.IsNullOrEmpty(element.Condition))

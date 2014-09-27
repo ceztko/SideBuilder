@@ -29,15 +29,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Microsoft.Build.Expressions.Internal
+namespace Microsoft.Build.Expressions
 {
-	
-	class Locatable
-	{
-		public ILocation Location { get; set; }		
-	}
-	
-	partial class ExpressionList : ILocation, IEnumerable<Expression>
+	public partial class ExpressionList : ILocation, IEnumerable<Expression>
 	{
         public ExpressionList()
         {
@@ -97,7 +91,7 @@ namespace Microsoft.Build.Expressions.Internal
         }
 	}
 
-	abstract partial class Expression : Locatable, ILocation
+	public abstract partial class Expression : Locatable, ILocation
 	{
 		//public int Line {
 		//	get { return Location.Line; }
@@ -118,47 +112,73 @@ namespace Microsoft.Build.Expressions.Internal
 		}
 	}
 	
-	enum Operator
-	{
-		EQ,
-		NE,
-		LT,
-		LE,
-		GT,
-		GE,
-		And,
-		Or
-	}
-	
-	partial class BinaryExpression : Expression
+	public partial class BinaryExpression : Expression
 	{
 		public Operator Operator { get; set; }
 		public Expression Left { get; set; }
 		public Expression Right { get; set; }
 	}
-	
-	partial class BooleanLiteral : Expression
+
+	public partial class BooleanLiteral : Expression
 	{
 		public bool Value { get; set; }
 	}
 
-	partial class NotExpression : Expression
+	public partial class NotExpression : Expression
 	{
 		public Expression Negated { get; set; }
 	}
 
-	partial class PropertyAccessExpression : Expression
+	public partial class PropertyAccessExpression : Expression
 	{
 		public PropertyAccess Access { get; set; }
 	}
-	
-	enum PropertyTargetType
-	{
-		Object,
-		Type,
-	}
-	
-	class PropertyAccess : Locatable
+
+    public partial class ItemAccessExpression : Expression
+    {
+        public ItemApplication Application { get; set; }
+    }
+
+    public partial class MetadataAccessExpression : Expression
+    {
+        public MetadataAccess Access { get; set; }
+    }
+
+    public partial class StringLiteral : Expression
+    {
+        public NameToken Value { get; set; }
+    }
+
+    public partial class RawStringLiteral : Expression
+    {
+        public NameToken Value { get; set; }
+    }
+
+    public partial class FunctionCallExpression : Expression
+    {
+        public NameToken Name { get; set; }
+        public ExpressionList Arguments { get; set; }
+    }
+
+    public enum Operator
+    {
+        EQ,
+        NE,
+        LT,
+        LE,
+        GT,
+        GE,
+        And,
+        Or
+    }
+
+    public class ItemApplication : Locatable
+    {
+        public NameToken Name { get; set; }
+        public ExpressionList Expressions { get; set; }
+    }
+
+	public class PropertyAccess : Locatable
 	{
 		public NameToken Name { get; set; }
 		public Expression Target { get; set; }
@@ -166,42 +186,21 @@ namespace Microsoft.Build.Expressions.Internal
 		public ExpressionList Arguments { get; set; }
 	}
 
-	partial class ItemAccessExpression : Expression
-	{
-		public ItemApplication Application { get; set; }
-	}
-	
-	class ItemApplication : Locatable
-	{
-		public NameToken Name { get; set; }
-		public ExpressionList Expressions { get; set; }
-	}
+    public class MetadataAccess : Locatable
+    {
+        public NameToken Metadata { get; set; }
+        public NameToken ItemType { get; set; }
+    }
 
-	partial class MetadataAccessExpression : Expression
-	{
-		public MetadataAccess Access { get; set; }
-	}
-	
-	class MetadataAccess : Locatable
-	{
-		public NameToken Metadata { get; set; }
-		public NameToken ItemType { get; set; }
-	}
-	
-	partial class StringLiteral : Expression
-	{
-		public NameToken Value { get; set; }
-	}
+    public class Locatable
+    {
+        public ILocation Location { get; set; }
+    }
 
-	partial class RawStringLiteral : Expression
-	{
-		public NameToken Value { get; set; }
-	}
-	
-	partial class FunctionCallExpression : Expression
-	{
-		public NameToken Name { get; set; }
-		public ExpressionList Arguments { get; set; }
-	}
+    public enum PropertyTargetType
+    {
+        Object,
+        Type,
+    }
 }
 

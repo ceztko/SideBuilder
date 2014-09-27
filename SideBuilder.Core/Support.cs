@@ -8,8 +8,9 @@ using System.Text;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using System.IO;
-using Microsoft.Build.Expressions.Internal;
+using Microsoft.Build.Expressions;
 using Microsoft.Build.Execution;
+using MSBuild.Support;
 
 namespace SideBuilder.Core
 {
@@ -139,6 +140,12 @@ namespace SideBuilder.Core
                     ProjectPropertyGroupElement propertyGroup = element as ProjectPropertyGroupElement;
                     break;
                 }
+                case ElementType.ItemDefinitionGroup:
+                {
+                    ProjectItemDefinitionGroupElement itemDefinitionGroup = element as ProjectItemDefinitionGroupElement;
+
+                    break;
+                }
             }
         }
 
@@ -148,39 +155,13 @@ namespace SideBuilder.Core
             {
                 case "ProjectItemGroupElement":
                     return ElementType.ItemGroup;
+                case "ProjectItemDefinitionGroupElement":
+                    return ElementType.ItemDefinitionGroup;
                 case "ProjectPropertyGroupElement":
                     return ElementType.PropertyGroup;
                 default:
                     return ElementType.Unsupported;
             }
         }
-    }
-
-    public enum ItemType
-    {
-        Unsupported = 0,
-        ClCompile,
-        ClInclude
-    }
-
-    public enum KnownItemDefinition
-    {
-        ClCompile
-    }
-
-    public enum KnwownClCompileMetatada
-    {
-        PrecompiledHeader,
-        PrecompiledHeaderFile,
-        WarningLevel,
-        Optimization,
-        PreprocessorDefinitions
-    }
-
-    internal enum ElementType
-    {
-        Unsupported,
-        ItemGroup,
-        PropertyGroup
     }
 }
