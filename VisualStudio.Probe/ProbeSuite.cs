@@ -23,6 +23,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio;
 using System.Runtime.InteropServices;
 using Microsoft.Build.Construction;
+using Microsoft.Build.Execution;
+using Microsoft.Build.Expressions;
 
 namespace VisualStudio.Probe
 {
@@ -54,6 +56,11 @@ namespace VisualStudio.Probe
             _DTE2 = _mainSite.DTE2;
             _tempDir = _mainSite.TempDir;
             _projectCollection = ProjectCollection.GlobalProjectCollection;
+
+            _projectCollection.ProjectAdded += new ProjectCollection.ProjectAddedEventHandler(_projectCollection_ProjectAdded);
+            _projectCollection.ProjectChanged += new EventHandler<ProjectChangedEventArgs>(_projectCollection_ProjectChanged);
+            _projectCollection.ProjectCollectionChanged += new EventHandler<ProjectCollectionChangedEventArgs>(_projectCollection_ProjectCollectionChanged);
+            _projectCollection.ProjectXmlChanged += new EventHandler<ProjectXmlChangedEventArgs>(_projectCollection_ProjectXmlChanged);
 
             NStackFrame stackFrame = new NStackFrame(true);
             string filename = stackFrame.GetFileName();
@@ -91,11 +98,31 @@ namespace VisualStudio.Probe
             confproject = _releaseConfig.GetConfiguredProject();
             propertiesProvider = confproject.GetProjectPropertiesProvider();
             propertiesProvider.ProjectPropertyChanged += new EventHandler<ProjectPropertyChangedEventArgs>(releasePropertiesProvider_ProjectPropertyChanged);
+        }
 
-            _projectCollection.ProjectAdded += new ProjectCollection.ProjectAddedEventHandler(_projectCollection_ProjectAdded);
-            _projectCollection.ProjectChanged += new EventHandler<ProjectChangedEventArgs>(_projectCollection_ProjectChanged);
-            _projectCollection.ProjectCollectionChanged += new EventHandler<ProjectCollectionChangedEventArgs>(_projectCollection_ProjectCollectionChanged);
-            _projectCollection.ProjectXmlChanged += new EventHandler<ProjectXmlChangedEventArgs>(_projectCollection_ProjectXmlChanged);
+        [Test]
+        public void EnvironmentVariables()
+        {
+            PropertyInfo property = typeof(ProjectCollection).GetProperty("EnvironmentVariables", BindingFlags.Instance | BindingFlags.NonPublic);
+            Dictionary<string, ProjectPropertyInstance> dictionary = property.GetValue(_projectCollection, new object[] { }) as Dictionary<string, ProjectPropertyInstance>;
+            //foreach ()
+        }
+
+        public void Test21312()
+        {
+            BuildProject project = null;
+            ConfiguredProject confproject = _debugConfig.GetConfiguredProject();
+            MSBuildProjectService service = confproject.GetProjectService();
+            using (var wrapper = service.GlobalCheckout(false))
+            {
+                project = wrapper.Project;
+            }
+
+            string test = "!$([System.String]::IsNullOrEmpty('$(TargetFrameworkVersion)'))";
+            bool test3 = new ExpressionEvaluator(project).EvaluateAsBoolean(test);
+            test = "$(TargetFrameworkVersion) == $(TargetFramork) and $(TargetFrameworkVersion) == '4.0'";
+            bool success;
+            bool? result = new ExpressionEvaluator(project).EvaluateAsBoolean(test, out success);
         }
 
         [Test]

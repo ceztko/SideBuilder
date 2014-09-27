@@ -203,6 +203,14 @@
     <None Include="..\Key.snk" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MSBuild.Support.VS10\MSBuild.Support.VS10.csproj">
+      <Project>{BC73F05B-6966-4FC7-A28E-7933C1907F9D}</Project>
+      <Name>MSBuild.Support.VS10</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SideBuilder.Core\SideBuilder.Core.csproj">
+      <Project>{6D59B7A2-DAAA-4CC5-A035-E631B3C5E2A3}</Project>
+      <Name>SideBuilder.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VisualStudio.Support\VisualStudio.Support.VS10.csproj">
       <Project>{C51EA5A8-9F74-4587-ADBB-6DDE4FBE1DA0}</Project>
       <Name>VisualStudio.Support.VS10</Name>
