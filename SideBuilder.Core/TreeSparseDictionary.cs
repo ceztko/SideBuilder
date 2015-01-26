@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2014 Francesco Pretto
+// This file is subject to the MIT license
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -60,6 +63,19 @@ namespace Collections.Specialized
 
         #region Inquiry
 
+        public bool ContainsKey(String key)
+        {
+            T value;
+            // TODO: Dont' lookup value, just tell if the dictionary contains it
+            // (easy, add a flag to TryLookupValue)
+            return _Root.TryLookupValue(key, _TreeMask, _Index, out value);
+        }
+
+        public bool TryGetValue(String key, out T value)
+        {
+            return _Root.TryLookupValue(key, _TreeMask, _Index, out value);
+        }
+
         public TreeSparseDictionary<T> Open()
         {
             TreeSparseDictionary<T> child = new TreeSparseDictionary<T>(this);
@@ -74,15 +90,31 @@ namespace Collections.Specialized
 
         #region Private methods
 
-        private T LookupValue(string key, BitArray treeMask, int idx)
+        /// <param name="treeMask">Provided treeMask of the children for comparison</param>
+        /// <param name="idx">Index of the children</param>
+        /// <returns></returns>
+        private bool TryLookupValue(string key, BitArray treeMask, int idx, out T value)
         {
-            BitArray valueMask = InnerDict[key];
+            BitArray valueMask;
+            bool success = InnerDict.TryGetValue(key, out valueMask);
+            if (!success)
+            {
+                value = default(T);
+                return false;
+            }
+
             if (treeMask == null)
             {
                 if (valueMask[0])
-                    return SparseValues[key];
+                {
+                    value = SparseValues[key];
+                    return true;
+                }
                 else
-                    throw new Exception();
+                {
+                    value = default(T);
+                    return false;
+                }
             }
 
             BitArray left = valueMask;
@@ -96,12 +128,14 @@ namespace Collections.Specialized
             int rightMost = FindRightmostBitSet(ancestorValues, Math.Min(treeMask.Count, valueMask.Count));
             if (rightMost == -1)
             {
-                throw new Exception();
+                value = default(T);
+                return false;
             }
             else
             {
                 string id = GetID(rightMost);
-                return SparseValues[id + key];
+                value = SparseValues[id + key];
+                return true;
             }
         }
 
@@ -240,7 +274,15 @@ namespace Collections.Specialized
 
         public T this[string key]
         {
-            get { return _Root.LookupValue(key, _TreeMask, _Index); }
+            get
+            {
+                T ret;
+                bool found = _Root.TryLookupValue(key, _TreeMask, _Index, out ret);
+                if (!found)
+                    throw new Exception("Key not found");
+
+                return ret;
+            }
             set { _Root.SetValue(key, value, _Index); }
         }
 
