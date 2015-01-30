@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Build.Construction;
 
 namespace MSBuild.Support
 {
@@ -47,9 +48,28 @@ namespace MSBuild.Support
     public enum ElementType
     {
         Unsupported,
-        ItemDefinitionGroup,
-        ItemGroup,
-        PropertyGroup
+        ExtensionsElement,
+        ImportElement,
+        MetadataElement,
+        OnErrorElement,
+        OutputElement,
+        PropertyElement,
+        UsingTaskBodyElement,
+        UsingTaskParameterElement,
+        ChooseElement,
+        ImportGroupElement,
+        ItemDefinitionElement,
+        ItemDefinitionGroupElement,
+        ItemElement,
+        ItemGroupElement,
+        OtherwiseElement,
+        PropertyGroupElement,
+        RootElement,
+        TargetElement,
+        TaskElement,
+        UsingTaskElement,
+        WhenElement,
+        UsingTaskParameterGroupElement,
     }
 
     public static class Extension
@@ -70,6 +90,59 @@ namespace MSBuild.Support
                     return "VisualStudioDir";
                 default:
                     throw new Exception();
+            }
+        }
+
+        public static ElementType GetElementType(this ProjectElement element)
+        {
+            switch (element.GetType().Name)
+            {
+                case "ProjectExtensionsElement":
+                    return ElementType.ExtensionsElement;
+                case "ProjectImportElement":
+                    return ElementType.ImportElement;
+                case "ProjectMetadataElement":
+                    return ElementType.MetadataElement;
+                case "ProjectOnErrorElement":
+                    return ElementType.OnErrorElement;
+                case "ProjectOutputElement":
+                    return ElementType.OutputElement;
+                case "ProjectPropertyElement":
+                    return ElementType.PropertyElement;
+                case "ProjectUsingTaskBodyElement":
+                    return ElementType.UsingTaskBodyElement;
+                case "ProjectUsingTaskParameterElement":
+                    return ElementType.UsingTaskParameterElement;
+                case "ProjectChooseElement":
+                    return ElementType.ChooseElement;
+                case "ProjectImportGroupElement":
+                    return ElementType.ImportGroupElement;
+                case "ProjectItemDefinitionElement":
+                    return ElementType.ItemDefinitionElement;
+                case "ProjectItemDefinitionGroupElement":
+                    return ElementType.ItemDefinitionGroupElement;
+                case "ProjectItemElement":
+                    return ElementType.ItemElement;
+                case "ProjectItemGroupElement":
+                    return ElementType.ItemGroupElement;
+                case "ProjectOtherwiseElement":
+                    return ElementType.OtherwiseElement;
+                case "ProjectPropertyGroupElement":
+                    return ElementType.PropertyGroupElement;
+                case "ProjectRootElement":
+                    return ElementType.RootElement;
+                case "ProjectTargetElement":
+                    return ElementType.TargetElement;
+                case "ProjectTaskElement":
+                    return ElementType.TaskElement;
+                case "ProjectUsingTaskElement":
+                    return ElementType.UsingTaskElement;
+                case "ProjectWhenElement":
+                    return ElementType.WhenElement;
+                case "UsingTaskParameterGroupElement":
+                    return ElementType.UsingTaskParameterGroupElement;
+                default:
+                    return ElementType.Unsupported;
             }
         }
     }
