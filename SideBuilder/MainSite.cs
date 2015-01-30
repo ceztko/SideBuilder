@@ -55,8 +55,6 @@ namespace SideBuilder
             _UpdateSolutionEvents = new UpdateSolutionEvents();
             hr = vsSolutionBuildManager.AdviseUpdateSolutionEvents3(_UpdateSolutionEvents, out pdwCookie);
             Marshal.ThrowExceptionForHR(hr);
-
-            foo();
         }
     }
 }
