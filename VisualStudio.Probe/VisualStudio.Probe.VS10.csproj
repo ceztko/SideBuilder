@@ -81,16 +81,16 @@
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.VCProjectEngine.dll</HintPath>
     </Reference>
     <Reference Include="nunit.core">
-      <HintPath>$(VSDEPS)\NUnit\2.6.3\bin\lib\nunit.core.dll</HintPath>
+      <HintPath>$(VSDEPS)\NUnit\2.6.4\bin\lib\nunit.core.dll</HintPath>
     </Reference>
     <Reference Include="nunit.core.interfaces">
-      <HintPath>$(VSDEPS)\NUnit\2.6.3\bin\lib\nunit.core.interfaces.dll</HintPath>
+      <HintPath>$(VSDEPS)\NUnit\2.6.4\bin\lib\nunit.core.interfaces.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>$(VSDEPS)\NUnit\2.6.3\bin\nunit.framework.dll</HintPath>
+      <HintPath>$(VSDEPS)\NUnit\2.6.4\bin\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="nunit.util">
-      <HintPath>$(VSDEPS)\NUnit\2.6.3\bin\lib\nunit.util.dll</HintPath>
+      <HintPath>$(VSDEPS)\NUnit\2.6.4\bin\lib\nunit.util.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
