@@ -70,7 +70,7 @@ it is likely that the MS tokenizer is hand-written.
 
 namespace Microsoft.Build.Expressions
 {
-	class ExpressionParser
+	public class ExpressionParser
 	{
 		static readonly int yacc_verbose_flag = Environment.GetEnvironmentVariable ("MONO_MSBUILD_PARSER_DEBUG") == "1" ? 1 : 0;
 

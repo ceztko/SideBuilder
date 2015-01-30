@@ -11,83 +11,102 @@ using System.IO;
 using Microsoft.Build.Expressions;
 using Microsoft.Build.Execution;
 using MSBuild.Support;
+using Collections.Specialized;
 
 namespace SideBuilder.Core
 {
+    public delegate IEnumerable<string> ProjectImportHandler(ProjectImportElement import, PropertyItemProvider provider);
+
     public static class Extensions
     {
-        public static IEnumerable<ProjectElement> Iterate(this ProjectRootElement xml, Project project)
+        public static IEnumerable<ProjectElement> Iterate(this ProjectRootElement xml, Project project,
+            ProjectImportHandler importHandler = null)
         {
+            if (importHandler == null)
+                importHandler = DefaultProjectImportHandler;
+
             HashSet<string> visitedImports = new HashSet<string>();
-            return Iterate(xml, new MSBuildProjectWrapper(project), visitedImports);
+            return Iterate(xml, new MSBuildProjectWrapper(project), importHandler, visitedImports);
         }
 
-        public static IEnumerable<ProjectElement> Iterate(this ProjectRootElement xml, ProjectInstance project)
+        public static IEnumerable<ProjectElement> Iterate(this ProjectRootElement xml, ProjectInstance project,
+            ProjectImportHandler importHandler = null)
         {
+            if (importHandler == null)
+                importHandler = DefaultProjectImportHandler;
+
             HashSet<string> visitedImports = new HashSet<string>();
-            return Iterate(xml, new MSBuildProjectInstanceWrapper(project), visitedImports);
+            return Iterate(xml, new MSBuildProjectInstanceWrapper(project), importHandler, visitedImports);
         }
 
-        internal static IEnumerable<ProjectElement> Iterate(this ProjectRootElement xml, PropertyItemProvider provider)
+        public static IEnumerable<ProjectElement> Iterate(this ProjectRootElement xml, PropertyItemProvider provider,
+            ProjectImportHandler importHandler = null)
         {
+            if (importHandler == null)
+                importHandler = DefaultProjectImportHandler;
+
             HashSet<string> visitedImports = new HashSet<string>();
-            return Iterate(xml, provider, visitedImports);
+            return Iterate(xml, provider, importHandler, visitedImports);
         }
 
-        private static IEnumerable<ProjectElement> Iterate(ProjectRootElement root,
-            PropertyItemProvider provider, HashSet<string> visitedImports)
+        private static IEnumerable<ProjectElement> Iterate(ProjectRootElement root, PropertyItemProvider provider,
+            ProjectImportHandler importHandler, HashSet<string> visitedImports)
         {
-            foreach (ProjectElement element in root.Children)
+            foreach (ProjectElement element1 in root.Children)
             {
-                ProjectImportGroupElement group = element as ProjectImportGroupElement;
+                ProjectImportGroupElement group = element1 as ProjectImportGroupElement;
                 if (group != null)
                 {
-                    foreach (ProjectElement element2 in Iterate(group, provider, visitedImports))
+                    foreach (ProjectElement element2 in Iterate(group, provider, importHandler, visitedImports))
                         yield return element2;
                 }
 
-                ProjectImportElement import = element as ProjectImportElement;
+                ProjectImportElement import = element1 as ProjectImportElement;
                 if (import != null)
                 {
-                    foreach (ProjectElement element2 in Iterate(import, provider, visitedImports))
+                    foreach (ProjectElement element2 in Iterate(import, provider, importHandler, visitedImports))
                         yield return element2;
                 }
 
-                yield return element;
+                yield return element1;
             }
         }
 
+        private static IEnumerable<String> DefaultProjectImportHandler(ProjectImportElement import, PropertyItemProvider provider)
+        {
+            string path = new ExpressionEvaluator(provider, null).Evaluate(import.Project);
+            string basepath = Path.GetDirectoryName(import.Location.File);
+            string[] paths = PathUtils.ExpandPath(basepath, path);
+            Array.Sort(paths, StringComparer.InvariantCulture);
+            return paths;
+        }
+
         private static IEnumerable<ProjectElement> Iterate(ProjectImportGroupElement group,
-            PropertyItemProvider provider, HashSet<string> visitedImports)
+            PropertyItemProvider provider, ProjectImportHandler importHandler, HashSet<string> visitedImports)
         {
             foreach (ProjectElement element in group.Children)
             {
                 ProjectImportElement import = element as ProjectImportElement;
                 if (import != null)
                 {
-                    foreach (ProjectElement element2 in Iterate(import, provider, visitedImports))
+                    foreach (ProjectElement element2 in Iterate(import, provider, importHandler, visitedImports))
                         yield return element2;
-                }
-                else
-                {
                 }
             }
         }
 
         private static IEnumerable<ProjectElement> Iterate(ProjectImportElement import,
-            PropertyItemProvider provider, HashSet<string> visitedImports)
+            PropertyItemProvider provider, ProjectImportHandler importHandler, HashSet<string> visitedImports)
         {
-            string path = new ExpressionEvaluator(provider, null).Evaluate(import.Project);
-            string basepath = Path.GetDirectoryName(import.Location.File);
-            string[] paths = PathUtils.ExpandPath(basepath, path);
-            Array.Sort(paths, StringComparer.InvariantCulture);
+            IEnumerable<string> paths = importHandler(import, provider);
             foreach (string filepath in paths)
             {
                 if (visitedImports.Contains(filepath))
                     continue;
 
                 visitedImports.Add(filepath);
-                ProjectRootElement importRoot = null;
+
+                ProjectRootElement importRoot;
                 try
                 {
                     importRoot = ProjectRootElement.Open(filepath);
@@ -96,71 +115,9 @@ namespace SideBuilder.Core
                 {
                     continue;
                 }
-                foreach (ProjectElement element2 in Iterate(importRoot, provider, visitedImports))
-                    yield return element2;
-            }
-        }
 
-        public static void Test(Project project)
-        {
-            string test = "!$([System.String]::IsNullOrEmpty('$(TargetFrameworkVersion)'))";
-
-            bool test3 = new ExpressionEvaluator(project).EvaluateAsBoolean(test);
-            test = "$(TargetFrameworkVersion) == $(TargetFramork) and $(TargetFrameworkVersion) == '4.0'";
-            bool success;
-            bool? result = new ExpressionEvaluator(project).EvaluateAsBoolean(test, out success);
-
-            ExpressionList exp2 = new ExpressionParser().Parse("Exists('$(MSBuildToolsPath)\\Microsoft.WorkflowBuildExtensions.targets')", ExpressionValidationType.StrictBoolean);
-            ExpressionList exp = new ExpressionParser().Parse(test, ExpressionValidationType.StrictBoolean);
-            List<ExpressionList> list = new List<ExpressionList>();
-
-            foreach (ProjectElement element in project.Xml.Iterate(project))
-            {
-                foo(element);
-
-                if (!String.IsNullOrEmpty(element.Condition))
-                {
-                    ExpressionList exps = new ExpressionParser().Parse(element.Condition, ExpressionValidationType.StrictBoolean);
-                    list.Add(exps);
-                }
-            }
-        }
-
-        public static void foo(ProjectElement element)
-        {
-            switch (element.GetElementType())
-            {
-                case ElementType.ItemGroup:
-                {
-                    ProjectItemGroupElement itemGroup = element as ProjectItemGroupElement;
-                    break;
-                }
-                case ElementType.PropertyGroup:
-                {
-                    ProjectPropertyGroupElement propertyGroup = element as ProjectPropertyGroupElement;
-                    break;
-                }
-                case ElementType.ItemDefinitionGroup:
-                {
-                    ProjectItemDefinitionGroupElement itemDefinitionGroup = element as ProjectItemDefinitionGroupElement;
-
-                    break;
-                }
-            }
-        }
-
-        private static ElementType GetElementType(this ProjectElement element)
-        {
-            switch (element.GetType().Name)
-            {
-                case "ProjectItemGroupElement":
-                    return ElementType.ItemGroup;
-                case "ProjectItemDefinitionGroupElement":
-                    return ElementType.ItemDefinitionGroup;
-                case "ProjectPropertyGroupElement":
-                    return ElementType.PropertyGroup;
-                default:
-                    return ElementType.Unsupported;
+                foreach (ProjectElement element in Iterate(importRoot, provider, importHandler, visitedImports))
+                    yield return element;
             }
         }
     }

@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="BuildConfigWriter.cs" />
     <Compile Include="BuilderCore.cs" />
+    <Compile Include="ProjectStatus.cs" />
     <Compile Include="PathUtils.cs">
       <SubType>Code</SubType>
     </Compile>

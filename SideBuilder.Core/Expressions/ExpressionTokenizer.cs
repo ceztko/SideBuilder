@@ -31,18 +31,6 @@ using Microsoft.Build.Evaluation;
 
 namespace Microsoft.Build.Expressions
 {
-	internal enum ExpressionValidationType
-	{
-		LaxString,
-		StrictBoolean,
-	}
-	
-	internal enum TokenizerMode
-	{
-		Default,
-		InsideItemOrProperty,
-	}
-	
 	internal class ExpressionTokenizer : yyParser.yyInput
 	{
 		public ExpressionTokenizer (string source, ExpressionValidationType validationType)
@@ -306,4 +294,16 @@ namespace Microsoft.Build.Expressions
 			return "at " + Column;
 		}
 	}
+
+    public enum ExpressionValidationType
+    {
+        LaxString,
+        StrictBoolean,
+    }
+
+    internal enum TokenizerMode
+    {
+        Default,
+        InsideItemOrProperty,
+    }
 }
