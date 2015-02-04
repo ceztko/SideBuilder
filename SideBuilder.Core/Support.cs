@@ -17,7 +17,7 @@ namespace SideBuilder.Core
 {
     public delegate IEnumerable<string> ProjectImportHandler(ProjectImportElement import, PropertyItemProvider provider);
 
-    public static class Extensions
+    public static class BuilderExtensions
     {
         public static IEnumerable<ProjectElement> Iterate(this ProjectRootElement xml, Project project,
             ProjectImportHandler importHandler = null)
@@ -72,11 +72,11 @@ namespace SideBuilder.Core
             }
         }
 
-        private static IEnumerable<String> DefaultProjectImportHandler(ProjectImportElement import, PropertyItemProvider provider)
+        public static IEnumerable<String> DefaultProjectImportHandler(ProjectImportElement import, PropertyItemProvider provider)
         {
             string path = new ExpressionEvaluator(provider, null).Evaluate(import.Project);
             string basepath = Path.GetDirectoryName(import.Location.File);
-            string[] paths = PathUtils.ExpandPath(basepath, path);
+            string[] paths = PathUtils.ResolvePath(basepath, path);
             Array.Sort(paths, StringComparer.InvariantCulture);
             return paths;
         }
